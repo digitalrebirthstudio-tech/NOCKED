@@ -103,7 +103,7 @@ export default function NewSessionPage() {
         .ghost-btn:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
       `}</style>
 
-      <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 40 }}>
+      <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 120 }}>
 
 
         <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 14 }}>

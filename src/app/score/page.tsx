@@ -94,7 +94,7 @@ export default function ScorePage() {
         .b-item.active { color: #ff5e1a; }
       `}</style>
 
-      <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 80 }}>
+      <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 120 }}>
 
 
         {/* Hero section */}

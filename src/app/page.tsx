@@ -359,7 +359,7 @@ export default function Home() {
         .delete-btn:hover { background: rgba(255,59,48,0.2); }
       `}</style>
 
-      <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 80 }}>
+      <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 120 }}>
 
 
         <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>

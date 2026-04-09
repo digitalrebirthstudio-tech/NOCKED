@@ -6,6 +6,8 @@ export default function BottomNav() {
   const router = useRouter();
   const pathname = usePathname();
 
+  if (pathname === '/landing') return null;
+
   const tabs = [
     { label: 'Sights', icon: 'adjust', route: '/' },
     { label: 'Scores', icon: 'scoreboard', route: '/score' },

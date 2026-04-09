@@ -144,7 +144,7 @@ export default function SessionPage() {
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
       `}</style>
 
-      <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 40 }}>
+      <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 120 }}>
 
 
         {/* PROGRESS BAR */}
