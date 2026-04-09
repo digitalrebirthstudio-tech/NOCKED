@@ -45,8 +45,8 @@ export default function NewSessionPage() {
 
     const session = {
       id: crypto.randomUUID(),
-      bowId: bow?.id ?? '',
-      bowName: bow?.name ?? '',
+      bowId: bow?.id || '',
+      bowName: bow?.name || 'No Bow',
       type: sessionType,
       date: Date.now(),
       totalScore: 0,
@@ -149,7 +149,9 @@ export default function NewSessionPage() {
             <div style={{ padding: '16px 18px' }}>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ff5e1a', marginBottom: 12 }}>Select Bow</div>
               {bows.length === 0 ? (
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>No bows linked — session will be unlinked.</div>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', padding: '10px 0' }}>
+                  No bows saved — session will continue without a linked bow.
+                </div>
               ) : (
                 <select className="f-input" value={selectedBowId} onChange={e => setSelectedBowId(e.target.value)}>
                   <option value="">No bow selected</option>
