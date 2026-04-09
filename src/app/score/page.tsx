@@ -144,9 +144,9 @@ export default function ScorePage() {
                         {/* 3 dot menu */}
                         <div style={{ position: 'relative' }}>
                           <button
-                            onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === s.id ? null : s.id); }}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: '4px 8px', fontSize: 20, lineHeight: 1, fontFamily: 'Inter, sans-serif', borderRadius: 6, transition: 'all 0.15s' }}
-                          >···</button>
+                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenMenuId(openMenuId === s.id ? null : s.id); }}
+                            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, cursor: 'pointer', color: 'rgba(255,255,255,0.6)', padding: '8px 12px', fontSize: 16, fontWeight: 900, lineHeight: 1, fontFamily: 'Inter, sans-serif', letterSpacing: '0.1em', transition: 'all 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 36, minHeight: 36 }}
+                          >•••</button>
                           {openMenuId === s.id && (
                             <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 4, background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, overflow: 'hidden', zIndex: 100, boxShadow: '0 8px 24px rgba(0,0,0,0.4)', minWidth: 140 }}>
                               <button
@@ -190,9 +190,9 @@ export default function ScorePage() {
                         {/* 3 dot menu */}
                         <div style={{ position: 'relative' }}>
                           <button
-                            onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === s.id ? null : s.id); }}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: '4px 8px', fontSize: 20, lineHeight: 1, fontFamily: 'Inter, sans-serif', borderRadius: 6, transition: 'all 0.15s' }}
-                          >···</button>
+                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenMenuId(openMenuId === s.id ? null : s.id); }}
+                            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, cursor: 'pointer', color: 'rgba(255,255,255,0.6)', padding: '8px 12px', fontSize: 16, fontWeight: 900, lineHeight: 1, fontFamily: 'Inter, sans-serif', letterSpacing: '0.1em', transition: 'all 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 36, minHeight: 36 }}
+                          >•••</button>
                           {openMenuId === s.id && (
                             <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 4, background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, overflow: 'hidden', zIndex: 100, boxShadow: '0 8px 24px rgba(0,0,0,0.4)', minWidth: 140 }}>
                               <button
