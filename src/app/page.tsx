@@ -32,6 +32,7 @@ type Screen = 'dashboard' | 'setup' | 'marks' | 'angle';
 interface BowProfile {
   id: string;
   name: string;
+  bowType?: 'target' | 'hunting';
   arrowSpeed: number;
   arrowWeight: number;
   peepToPin: number;
@@ -45,6 +46,12 @@ interface BowProfile {
   calibMark2: string;
   lastUsed: number;
   marks?: { distance: number; mark: number; drop: number }[];
+  drawWeight?: number;
+  arrowLength?: number;
+  drawLength?: number;
+  broadheadWeight?: number;
+  pin1?: number; pin2?: number; pin3?: number; pin4?: number; pin5?: number; pin6?: number;
+  ke?: number;
 }
 
 function calculateSightMarks({
@@ -100,6 +107,8 @@ export default function Home() {
   const [activeBow, setActiveBow] = useState<BowProfile | null>(null);
   const [editingBow, setEditingBow] = useState<Partial<BowProfile>>(defaultBow());
   const [isNewBow, setIsNewBow] = useState(true);
+  const [bowType, setBowType] = useState<'target' | 'hunting' | null>(null);
+  const [showBowTypeSelect, setShowBowTypeSelect] = useState(false);
   const [gameMode, setGameMode] = useState<GameMode>('Field');
   const [unit, setUnit] = useState<'yd' | 'm'>('yd');
   const [direction, setDirection] = useState<'Up' | 'Down'>('Up');
@@ -133,7 +142,41 @@ export default function Home() {
   const handleNewBow = () => {
     setEditingBow(defaultBow());
     setIsNewBow(true);
+    setBowType(null);
+    setShowBowTypeSelect(true);
     setScreen('setup');
+  };
+
+  const handleSaveHuntingBow = () => {
+    if (!editingBow.name) {
+      alert('Enter a bow name first.');
+      return;
+    }
+    const fps = editingBow.arrowSpeed || 0;
+    const grains = editingBow.arrowWeight || 0;
+    const ke = grains > 0 && fps > 0
+      ? parseFloat(((grains * fps * fps) / 450240).toFixed(1))
+      : 0;
+    const id = isNewBow ? crypto.randomUUID() : (editingBow.id || crypto.randomUUID());
+    const saved: BowProfile = {
+      ...(editingBow as BowProfile),
+      id,
+      bowType: 'hunting',
+      lastUsed: Date.now(),
+      ke,
+      marks: [],
+      sightResolution: 0,
+      sightTypeLabel: 'Fixed Pins',
+      calibDist1: 0,
+      calibMark1: '',
+      calibDist2: 0,
+      calibMark2: '',
+    };
+    const existing = bows.find(b => b.id === id);
+    const updated = existing ? bows.map(b => b.id === id ? saved : b) : [...bows, saved];
+    saveBows(updated);
+    setActiveBow(saved);
+    setScreen('dashboard');
   };
 
   const handleEditBow = (bow: BowProfile) => {
@@ -546,79 +589,192 @@ export default function Home() {
           {/* ── BOW SETUP ── */}
           {screen === 'setup' && (
             <>
-              <div className="glass-card">
-                <div style={{ padding: '16px 18px' }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ff5e1a', marginBottom: 14 }}>
-                    {isNewBow ? 'New Bow' : 'Edit Bow'}
+              {showBowTypeSelect ? (
+                /* BOW TYPE SELECTION */
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 4 }}>
+                    What type of bow are you adding?
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                    <div style={{ gridColumn: 'span 2' }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Bow Name</div>
-                      <input className="f-input" type="text" placeholder="e.g. Hoyt Carbon RX-8"
-                        value={editingBow.name || ''} onChange={e => setEditingBow({ ...editingBow, name: e.target.value })} />
+
+                  {[
+                    {
+                      type: 'target' as const,
+                      emoji: '🎯',
+                      title: 'Target / Field Bow',
+                      desc: 'Full sight mark calculator with clicks, calibration marks, and angle cut',
+                    },
+                    {
+                      type: 'hunting' as const,
+                      emoji: '🦌',
+                      title: 'Hunting Bow',
+                      desc: 'Fixed pins, kinetic energy, max ethical range, and basic bow stats',
+                    },
+                  ].map(({ type, emoji, title, desc }) => (
+                    <div
+                      key={type}
+                      onClick={() => { setBowType(type); setShowBowTypeSelect(false); }}
+                      style={{
+                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: 18, padding: '24px 20px', cursor: 'pointer', transition: 'all 0.15s',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.borderColor = '#ff5e1a')}
+                      onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)')}
+                    >
+                      <div style={{ fontSize: 36, marginBottom: 12 }}>{emoji}</div>
+                      <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 6 }}>{title}</div>
+                      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>{desc}</div>
                     </div>
-                    {[
-                      { label: 'Arrow Speed (fps)', field: 'arrowSpeed', type: 'number' },
-                      { label: 'Arrow Weight (gr)', field: 'arrowWeight', type: 'number' },
-                      { label: 'Peep to Pin (in)', field: 'peepToPin', type: 'number' },
-                      { label: 'Peep to Arrow (in)', field: 'peepToArrow', type: 'number' },
-                      { label: 'Arrow Diameter (in)', field: 'arrowDiameter', type: 'number' },
-                    ].map(({ label, field, type }) => (
-                      <div key={field}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>{label}</div>
-                        <input className="f-input" type={type}
-                          value={(editingBow as any)[field] || ''}
-                          onChange={e => setEditingBow({ ...editingBow, [field]: parseFloat(e.target.value) || 0 })} />
+                  ))}
+
+                  <button className="ghost-btn" onClick={() => { setShowBowTypeSelect(false); setScreen('dashboard'); }}>
+                    Cancel
+                  </button>
+                </div>
+              ) : bowType === 'target' ? (
+                /* TARGET BOW SETUP */
+                <>
+                  <div className="glass-card">
+                    <div style={{ padding: '16px 18px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                        <span style={{ fontSize: 20 }}>🎯</span>
+                        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ff5e1a' }}>
+                          {isNewBow ? 'New Target Bow' : 'Edit Target Bow'}
+                        </div>
                       </div>
-                    ))}
-                    <div style={{ gridColumn: 'span 2' }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Sight Type</div>
-                      <select className="f-input"
-                        value={editingBow.sightTypeLabel || ''}
-                        onChange={e => {
-                          const sight = SIGHT_TYPES.find(s => s.label === e.target.value);
-                          setEditingBow({ ...editingBow, sightTypeLabel: e.target.value, sightResolution: sight?.resolution || 0.002 });
-                        }}>
-                        {SIGHT_TYPES.map(s => (
-                          <option key={s.label} value={s.label}>{s.label}</option>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                        <div style={{ gridColumn: 'span 2' }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Bow Name</div>
+                          <input className="f-input" type="text" placeholder="e.g. Hoyt Carbon RX-8"
+                            value={editingBow.name || ''} onChange={e => setEditingBow({ ...editingBow, name: e.target.value })} />
+                        </div>
+                        {[
+                          { label: 'Arrow Speed (fps)', field: 'arrowSpeed', type: 'number' },
+                          { label: 'Arrow Weight (gr)', field: 'arrowWeight', type: 'number' },
+                          { label: 'Peep to Pin (in)', field: 'peepToPin', type: 'number' },
+                          { label: 'Peep to Arrow (in)', field: 'peepToArrow', type: 'number' },
+                          { label: 'Arrow Diameter (in)', field: 'arrowDiameter', type: 'number' },
+                        ].map(({ label, field, type }) => (
+                          <div key={field}>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>{label}</div>
+                            <input className="f-input" type={type}
+                              value={(editingBow as any)[field] || ''}
+                              onChange={e => setEditingBow({ ...editingBow, [field]: parseFloat(e.target.value) || 0 })} />
+                          </div>
                         ))}
-                      </select>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 6 }}>
-                        Resolution: {editingBow.sightResolution}" per click
+                        <div style={{ gridColumn: 'span 2' }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Sight Type</div>
+                          <select className="f-input"
+                            value={editingBow.sightTypeLabel || ''}
+                            onChange={e => {
+                              const sight = SIGHT_TYPES.find(s => s.label === e.target.value);
+                              setEditingBow({ ...editingBow, sightTypeLabel: e.target.value, sightResolution: sight?.resolution || 0.002 });
+                            }}>
+                            {SIGHT_TYPES.map(s => (
+                              <option key={s.label} value={s.label}>{s.label}</option>
+                            ))}
+                          </select>
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 6 }}>
+                            Resolution: {editingBow.sightResolution}" per click
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="glass-card">
-                <div style={{ padding: '16px 18px' }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ff5e1a', marginBottom: 8 }}>Calibration — Shot-In Marks</div>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', fontWeight: 500, marginBottom: 14, lineHeight: 1.5 }}>
-                    Shoot 2 real marks at known distances. Farther apart = more accurate.
-                  </p>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                    {[
-                      { label: 'Distance 1 (yd)', field: 'calibDist1', placeholder: '20', isNum: true },
-                      { label: 'Mark at Dist 1', field: 'calibMark1', placeholder: 'e.g. 37.40', isNum: false },
-                      { label: 'Distance 2 (yd)', field: 'calibDist2', placeholder: '50', isNum: true },
-                      { label: 'Mark at Dist 2', field: 'calibMark2', placeholder: 'e.g. 59.40', isNum: false },
-                    ].map(({ label, field, placeholder, isNum }) => (
-                      <div key={field}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>{label}</div>
-                        <input className="f-input" type="number" placeholder={placeholder}
-                          value={(editingBow as any)[field] || ''}
-                          onChange={e => setEditingBow({ ...editingBow, [field]: isNum ? parseFloat(e.target.value) || 0 : e.target.value })} />
+                  <div className="glass-card">
+                    <div style={{ padding: '16px 18px' }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ff5e1a', marginBottom: 8 }}>Calibration — Shot-In Marks</div>
+                      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', fontWeight: 500, marginBottom: 14, lineHeight: 1.5 }}>
+                        Shoot 2 real marks at known distances. Farther apart = more accurate.
+                      </p>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                        {[
+                          { label: 'Distance 1 (yd)', field: 'calibDist1', placeholder: '20', isNum: true },
+                          { label: 'Mark at Dist 1', field: 'calibMark1', placeholder: 'e.g. 37.40', isNum: false },
+                          { label: 'Distance 2 (yd)', field: 'calibDist2', placeholder: '50', isNum: true },
+                          { label: 'Mark at Dist 2', field: 'calibMark2', placeholder: 'e.g. 59.40', isNum: false },
+                        ].map(({ label, field, placeholder, isNum }) => (
+                          <div key={field}>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>{label}</div>
+                            <input className="f-input" type="number" placeholder={placeholder}
+                              value={(editingBow as any)[field] || ''}
+                              onChange={e => setEditingBow({ ...editingBow, [field]: isNum ? parseFloat(e.target.value) || 0 : e.target.value })} />
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              <button className="main-btn" onClick={handleCalculate}>
-                {isNewBow ? 'Save & Calculate Marks' : 'Update & Recalculate'}
-              </button>
-              <button className="ghost-btn" onClick={() => setScreen('dashboard')}>Cancel</button>
+                  <button className="main-btn" onClick={handleCalculate}>
+                    {isNewBow ? 'Save & Calculate Marks' : 'Update & Recalculate'}
+                  </button>
+                  <button className="ghost-btn" onClick={() => setScreen('dashboard')}>Cancel</button>
+                </>
+              ) : bowType === 'hunting' ? (
+                /* HUNTING BOW SETUP */
+                <>
+                  <div className="glass-card">
+                    <div style={{ padding: '16px 18px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                        <span style={{ fontSize: 20 }}>🦌</span>
+                        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ff5e1a' }}>
+                          {isNewBow ? 'New Hunting Bow' : 'Edit Hunting Bow'}
+                        </div>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                        <div style={{ gridColumn: 'span 2' }}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Bow Name</div>
+                          <input className="f-input" type="text" placeholder="e.g. Mathews Phase 4"
+                            value={editingBow.name || ''} onChange={e => setEditingBow({ ...editingBow, name: e.target.value })} />
+                        </div>
+                        {[
+                          { label: 'Arrow Speed (fps)', field: 'arrowSpeed', type: 'number', placeholder: 'e.g. 280' },
+                          { label: 'Draw Weight (lbs)', field: 'drawWeight', type: 'number', placeholder: 'e.g. 70' },
+                          { label: 'Arrow Weight (gr)', field: 'arrowWeight', type: 'number', placeholder: 'e.g. 450' },
+                          { label: 'Arrow Length (in)', field: 'arrowLength', type: 'number', placeholder: 'e.g. 29' },
+                          { label: 'Draw Length (in)', field: 'drawLength', type: 'number', placeholder: 'e.g. 28.5' },
+                          { label: 'Broadhead Weight (gr)', field: 'broadheadWeight', type: 'number', placeholder: 'e.g. 100' },
+                        ].map(({ label, field, type, placeholder }) => (
+                          <div key={field}>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>{label}</div>
+                            <input className="f-input" type={type} placeholder={placeholder}
+                              value={(editingBow as any)[field] || ''}
+                              onChange={e => setEditingBow({ ...editingBow, [field]: parseFloat(e.target.value) || 0 })} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="glass-card">
+                    <div style={{ padding: '16px 18px' }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ff5e1a', marginBottom: 14 }}>Fixed Pin Yardages</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                        {[
+                          { label: 'Pin 1 (yd)', field: 'pin1' },
+                          { label: 'Pin 2 (yd)', field: 'pin2' },
+                          { label: 'Pin 3 (yd)', field: 'pin3' },
+                          { label: 'Pin 4 (yd)', field: 'pin4' },
+                          { label: 'Pin 5 (yd)', field: 'pin5' },
+                          { label: 'Pin 6 (yd)', field: 'pin6' },
+                        ].map(({ label, field }) => (
+                          <div key={field}>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>{label}</div>
+                            <input className="f-input" type="number" placeholder="e.g. 20"
+                              value={(editingBow as any)[field] || ''}
+                              onChange={e => setEditingBow({ ...editingBow, [field]: parseFloat(e.target.value) || 0 })} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button className="main-btn" onClick={handleSaveHuntingBow}>
+                    {isNewBow ? 'Save Hunting Bow' : 'Update Hunting Bow'}
+                  </button>
+                  <button className="ghost-btn" onClick={() => setScreen('dashboard')}>Cancel</button>
+                </>
+              ) : null}
             </>
           )}
         </div>
