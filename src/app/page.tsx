@@ -617,8 +617,6 @@ export default function Home() {
                         background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
                         borderRadius: 18, padding: '24px 20px', cursor: 'pointer', transition: 'all 0.15s',
                       }}
-                      onMouseEnter={e => (e.currentTarget.style.borderColor = '#ff5e1a')}
-                      onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)')}
                     >
                       <div style={{ fontSize: 36, marginBottom: 12 }}>{emoji}</div>
                       <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 6 }}>{title}</div>
