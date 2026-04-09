@@ -220,19 +220,6 @@ export default function ScorePage() {
             </div>
           )}
         </div>
-
-        {/* BOTTOM NAV */}
-        <div style={{
-          position: 'fixed', bottom: 0, left: 0, right: 0,
-          background: 'rgba(20,20,20,0.9)', backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)', borderTop: '1px solid rgba(255,255,255,0.06)',
-          padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          maxWidth: 680, margin: '0 auto',
-        }}>
-          <button className="b-item" onClick={() => router.push('/')}>Dashboard</button>
-          <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)' }}>Nocked</div>
-          <button className="b-item active">Score</button>
-        </div>
       </div>
     </>
   );

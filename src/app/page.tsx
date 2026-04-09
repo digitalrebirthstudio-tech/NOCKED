@@ -778,41 +778,6 @@ export default function Home() {
             </>
           )}
         </div>
-
-        {/* BOTTOM BAR */}
-        <div style={{
-          position: 'fixed', bottom: 0, left: 0, right: 0,
-          background: 'rgba(20,20,20,0.85)', backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)', borderTop: '1px solid rgba(255,255,255,0.06)',
-          padding: '8px 24px 16px',
-          display: 'flex', justifyContent: 'space-around', alignItems: 'center',
-          maxWidth: 680, margin: '0 auto', zIndex: 50,
-        }}>
-          {[
-            { label: 'Sights', icon: 'adjust', screen: 'dashboard' },
-            { label: 'Scores', icon: 'scoreboard', route: '/score' },
-            { label: 'Analysis', icon: 'insights', route: '/analysis' },
-            { label: 'Profile', icon: 'person', route: '/profile' },
-          ].map(({ label, icon, screen: s, route }) => {
-            const isActive = s ? screen === s : false;
-            return (
-              <button
-                key={label}
-                onClick={() => s ? setScreen(s as any) : router.push(route!)}
-                style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center',
-                  gap: 4, background: 'none', border: 'none', cursor: 'pointer',
-                  color: isActive ? '#ff5e1a' : 'rgba(255,255,255,0.3)',
-                  transition: 'all 0.15s', padding: '4px 12px',
-                  transform: isActive ? 'scale(1.1)' : 'scale(1)',
-                }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 24 }}>{icon}</span>
-                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>{label}</span>
-              </button>
-            );
-          })}
-        </div>
       </div>
     </>
   );

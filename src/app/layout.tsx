@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import BottomNav from '@/components/BottomNav';
 
 export const metadata: Metadata = {
   title: 'Nocked — Field Archery Calculator',
@@ -34,7 +35,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body style={{ margin: 0, background: '#141414', color: '#fff' }}>
+        {children}
+        <BottomNav />
+      </body>
     </html>
   );
 }
