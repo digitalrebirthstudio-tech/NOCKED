@@ -245,6 +245,24 @@ export default function SummaryPage() {
 
           <button className="main-btn" onClick={() => router.push('/score/new')}>Start New Session</button>
           <button className="ghost-btn" onClick={() => router.push('/score')}>Back to Sessions</button>
+          <button
+            onClick={() => {
+              if (!confirm('Delete this session? This cannot be undone.')) return;
+              const saved = localStorage.getItem('nocked_sessions');
+              const sessions = saved ? JSON.parse(saved) : [];
+              const updated = sessions.filter((s: any) => s.id !== params.id);
+              localStorage.setItem('nocked_sessions', JSON.stringify(updated));
+              router.push('/score');
+            }}
+            style={{
+              width: '100%', padding: '13px', background: 'rgba(255,59,48,0.08)',
+              color: '#ff3b30', border: '1px solid rgba(255,59,48,0.2)',
+              borderRadius: 14, fontSize: 14, fontWeight: 600,
+              fontFamily: 'Inter, sans-serif', cursor: 'pointer', transition: 'all 0.15s',
+            }}
+          >
+            🗑 Delete Session
+          </button>
         </div>
       </div>
     </>
