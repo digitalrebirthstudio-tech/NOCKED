@@ -98,16 +98,27 @@ export default function ScorePage() {
 
         {/* HEADER */}
         <div style={{
-          padding: '20px 24px 16px', display: 'flex', alignItems: 'center', gap: 12,
+          padding: '20px 24px 16px', display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between',
           borderBottom: '1px solid rgba(255,255,255,0.06)',
           background: 'rgba(20,20,20,0.85)', backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)', position: 'sticky', top: 0, zIndex: 10,
         }}>
-          <Image src="/nocked-logo.png" alt="Nocked" width={38} height={38} style={{ borderRadius: 10, cursor: 'pointer' }} onClick={() => router.push('/')} />
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: '#fff', letterSpacing: -0.5 }}>Score</div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontWeight: 500, marginTop: 1 }}>Session Tracker</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span className="material-symbols-outlined" style={{ color: '#ff5e1a', fontSize: 28 }}>target</span>
+            <h1 style={{ fontSize: 24, fontWeight: 900, color: '#ff5e1a', fontStyle: 'italic', letterSpacing: '-0.5px', textTransform: 'uppercase', margin: 0 }}>NOCKED</h1>
           </div>
+          <span className="material-symbols-outlined" style={{ color: 'rgba(255,255,255,0.3)', fontSize: 24, cursor: 'pointer' }}>settings</span>
+        </div>
+
+        {/* Hero section */}
+        <div style={{ padding: '32px 24px 8px' }}>
+          <h2 style={{ fontSize: 48, fontWeight: 900, color: '#fff', letterSpacing: '-2px', lineHeight: 1.05, margin: 0, textTransform: 'uppercase' }}>
+            PRECISION <span style={{ color: '#ff5e1a' }}>TRACKING</span>
+          </h2>
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: 8, fontWeight: 600 }}>
+            Telemetry Dashboard // v2.0.4
+          </p>
         </div>
 
         <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
