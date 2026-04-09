@@ -122,7 +122,7 @@ export default function SummaryPage() {
         .ghost-btn:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
       `}</style>
 
-      <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 40 }}>
+      <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 120 }}>
 
         {/* HEADER */}
         <div style={{
