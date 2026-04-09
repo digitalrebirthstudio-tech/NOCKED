@@ -96,20 +96,6 @@ export default function ScorePage() {
 
       <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 80 }}>
 
-        {/* HEADER */}
-        <div style={{
-          padding: '20px 24px 16px', display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          background: 'rgba(20,20,20,0.85)', backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)', position: 'sticky', top: 0, zIndex: 10,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span className="material-symbols-outlined" style={{ color: '#ff5e1a', fontSize: 28 }}>target</span>
-            <h1 style={{ fontSize: 24, fontWeight: 900, color: '#ff5e1a', fontStyle: 'italic', letterSpacing: '-0.5px', textTransform: 'uppercase', margin: 0 }}>NOCKED</h1>
-          </div>
-          <span className="material-symbols-outlined" style={{ color: 'rgba(255,255,255,0.3)', fontSize: 24, cursor: 'pointer' }}>settings</span>
-        </div>
 
         {/* Hero section */}
         <div style={{ padding: '32px 24px 8px' }}>

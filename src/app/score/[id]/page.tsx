@@ -146,21 +146,6 @@ export default function SessionPage() {
 
       <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 40 }}>
 
-        {/* HEADER */}
-        <div style={{
-          padding: '16px 24px', display: 'flex', alignItems: 'center', gap: 12,
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          background: 'rgba(20,20,20,0.85)', backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)', position: 'sticky', top: 0, zIndex: 10,
-        }}>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: '#fff' }}>{session.type} — {session.bowName}</div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>{scored} / {session.totalTargets} targets · Score: {session.totalScore}</div>
-          </div>
-          <button onClick={handleFinish} style={{ marginLeft: 'auto', background: 'rgba(255,94,26,0.15)', border: '1px solid rgba(255,94,26,0.3)', color: '#ff5e1a', fontSize: 12, fontWeight: 700, padding: '7px 14px', borderRadius: 8, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
-            Finish Round
-          </button>
-        </div>
 
         {/* PROGRESS BAR */}
         <div style={{ height: 3, background: 'rgba(255,255,255,0.06)' }}>

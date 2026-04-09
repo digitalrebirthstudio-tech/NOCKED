@@ -361,28 +361,6 @@ export default function Home() {
 
       <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 80 }}>
 
-        {/* STICKY HEADER */}
-        <div style={{
-          padding: '20px 24px 16px', display: 'flex', alignItems: 'center', gap: 12,
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-          background: 'rgba(20,20,20,0.85)', backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)', position: 'sticky', top: 0, zIndex: 10,
-        }}>
-          <Image src="/nocked-logo.png" alt="Nocked" width={38} height={38} style={{ borderRadius: 10, cursor: 'pointer' }} onClick={() => setScreen('dashboard')} />
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: '#fff', letterSpacing: -0.5 }}>Nocked</div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontWeight: 500, marginTop: 1 }}>Field Archery Calculator</div>
-          </div>
-          {activeBow && screen !== 'setup' && (
-            <div style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: '#ff5e1a', background: 'rgba(255,94,26,0.12)', padding: '6px 14px', borderRadius: 100, border: '1px solid rgba(255,94,26,0.2)', cursor: 'pointer' }}
-              onClick={() => setScreen('dashboard')}>
-              {activeBow.name}
-            </div>
-          )}
-          {screen === 'setup' && (
-            <button onClick={() => setScreen('dashboard')} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-          )}
-        </div>
 
         <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
