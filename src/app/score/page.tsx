@@ -60,6 +60,8 @@ export default function ScorePage() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+        .material-symbols-outlined { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; }
         * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; box-sizing: border-box; }
         body { margin: 0; background: #141414; min-height: 100vh; color: #fff; }
         .glass-card {
@@ -168,10 +170,53 @@ export default function ScorePage() {
           )}
 
           {sessions.length === 0 && (
-            <div className="glass-card" style={{ padding: '60px 24px', textAlign: 'center' }}>
-              <div style={{ fontSize: 48, marginBottom: 16 }}>🎯</div>
-              <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 8 }}>No sessions yet</div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)' }}>Start a new session to track your scores</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+
+              {/* Main empty state card — spans 2 cols */}
+              <div style={{
+                gridColumn: 'span 2', background: 'rgba(28,27,27,1)',
+                borderRadius: 16, padding: 32, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center', minHeight: 400,
+                position: 'relative', overflow: 'hidden',
+              }}>
+                <div style={{ position: 'absolute', top: 0, right: 0, width: 120, height: 120, borderRight: '1px solid rgba(255,94,26,0.15)', borderTop: '1px solid rgba(255,94,26,0.15)' }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, width: 60, height: 60, borderLeft: '1px solid rgba(255,94,26,0.15)', borderBottom: '1px solid rgba(255,94,26,0.15)' }} />
+
+                <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 40, color: 'rgba(255,255,255,0.2)' }}>target</span>
+                </div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 12, textAlign: 'center' }}>No sessions yet</div>
+                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', textAlign: 'center', maxWidth: 280, lineHeight: 1.6, marginBottom: 32 }}>
+                  Your kinetic data is waiting. Start your first scoring session to calibrate your performance metrics.
+                </div>
+                <button className="main-btn" style={{ width: 'auto', padding: '14px 28px' }} onClick={() => router.push('/score/new')}>
+                  + Start New Session
+                </button>
+              </div>
+
+              {/* Stats side panel */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+                {/* Avg score */}
+                <div style={{ background: '#0e0e0e', borderRadius: 14, padding: 20, borderLeft: '2px solid rgba(255,94,26,0.2)' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 16 }}>Avg. Score</div>
+                  <div style={{ height: 28, width: '75%', background: 'rgba(255,255,255,0.06)', borderRadius: 6 }} />
+                  <div style={{ marginTop: 12, fontSize: 10, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Awaiting Data</div>
+                </div>
+
+                {/* Total arrows */}
+                <div style={{ background: '#0e0e0e', borderRadius: 14, padding: 20, borderLeft: '2px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>Total Arrows</div>
+                  <div style={{ fontSize: 36, fontWeight: 900, color: 'rgba(255,255,255,0.15)' }}>0</div>
+                  <div style={{ marginTop: 8, fontSize: 10, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Lifetime Count</div>
+                </div>
+
+                {/* Last calibration */}
+                <div style={{ background: 'rgba(28,27,27,1)', borderRadius: 14, padding: 20, flex: 1 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#ff5e1a', marginBottom: 16 }}>Last Calibration</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>No active sight marks</div>
+                </div>
+              </div>
             </div>
           )}
         </div>

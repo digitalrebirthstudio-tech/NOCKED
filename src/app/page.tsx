@@ -259,6 +259,8 @@ export default function Home() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+        .material-symbols-outlined { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 24px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; }
         * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; box-sizing: border-box; }
         body { margin: 0; background: #141414; min-height: 100vh; color: #fff; }
         .f-input {
@@ -780,16 +782,36 @@ export default function Home() {
         {/* BOTTOM BAR */}
         <div style={{
           position: 'fixed', bottom: 0, left: 0, right: 0,
-          background: 'rgba(20,20,20,0.9)', backdropFilter: 'blur(20px)',
+          background: 'rgba(20,20,20,0.85)', backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)', borderTop: '1px solid rgba(255,255,255,0.06)',
-          padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          maxWidth: 680, margin: '0 auto',
+          padding: '8px 24px 16px',
+          display: 'flex', justifyContent: 'space-around', alignItems: 'center',
+          maxWidth: 680, margin: '0 auto', zIndex: 50,
         }}>
-          <button className={`b-item${screen === 'dashboard' ? ' active' : ''}`} onClick={() => router.push('/')}>Dashboard</button>
-          <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.6)' }}>
-            {activeBow ? activeBow.name : 'No Bow Selected'}
-          </div>
-          <button className="b-item" onClick={() => router.push('/score')}>Score</button>
+          {[
+            { label: 'Sights', icon: 'adjust', screen: 'dashboard' },
+            { label: 'Scores', icon: 'scoreboard', route: '/score' },
+            { label: 'Analysis', icon: 'insights', route: '/analysis' },
+            { label: 'Profile', icon: 'person', route: '/profile' },
+          ].map(({ label, icon, screen: s, route }) => {
+            const isActive = s ? screen === s : false;
+            return (
+              <button
+                key={label}
+                onClick={() => s ? setScreen(s as any) : router.push(route!)}
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  gap: 4, background: 'none', border: 'none', cursor: 'pointer',
+                  color: isActive ? '#ff5e1a' : 'rgba(255,255,255,0.3)',
+                  transition: 'all 0.15s', padding: '4px 12px',
+                  transform: isActive ? 'scale(1.1)' : 'scale(1)',
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 24 }}>{icon}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'Inter, sans-serif' }}>{label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </>
