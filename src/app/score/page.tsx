@@ -42,6 +42,7 @@ export default function ScorePage() {
   }, []);
 
   const deleteSession = (id: string) => {
+    if (!confirm('Delete this session? This cannot be undone.')) return;
     const updated = sessions.filter(s => s.id !== id);
     setSessions(updated);
     localStorage.setItem('nocked_sessions', JSON.stringify(updated));
@@ -158,9 +159,20 @@ export default function ScorePage() {
                         <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{s.bowName}</div>
                         <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{s.totalTargets} targets · {s.misses} misses</div>
                       </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: 28, fontWeight: 800, color: '#ff5e1a', letterSpacing: -1 }}>{s.totalScore}</div>
-                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>/ {s.totalTargets * 12}</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: 28, fontWeight: 800, color: '#ff5e1a', letterSpacing: -1 }}>{s.totalScore}</div>
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>/ {s.totalTargets * 12}</div>
+                        </div>
+                        <button
+                          className="delete-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteSession(s.id);
+                          }}
+                        >
+                          DEL
+                        </button>
                       </div>
                     </div>
                   </div>
