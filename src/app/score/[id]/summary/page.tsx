@@ -261,7 +261,7 @@ export default function SummaryPage() {
               fontFamily: 'Inter, sans-serif', cursor: 'pointer', transition: 'all 0.15s',
             }}
           >
-            🗑 Delete Session
+            Delete Session
           </button>
         </div>
       </div>
