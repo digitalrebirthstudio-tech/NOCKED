@@ -35,7 +35,6 @@ export default function NewSessionPage() {
 
   const handleStart = () => {
     const bow = bows.find(b => b.id === selectedBowId);
-    if (!bow) { alert('Select a bow first.'); return; }
 
     const targets = Array.from({ length: targetCount }, (_, i) => ({
       number: i + 1,
@@ -46,8 +45,8 @@ export default function NewSessionPage() {
 
     const session = {
       id: crypto.randomUUID(),
-      bowId: bow.id,
-      bowName: bow.name,
+      bowId: bow?.id ?? '',
+      bowName: bow?.name ?? '',
       type: sessionType,
       date: Date.now(),
       totalScore: 0,
@@ -150,9 +149,10 @@ export default function NewSessionPage() {
             <div style={{ padding: '16px 18px' }}>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ff5e1a', marginBottom: 12 }}>Select Bow</div>
               {bows.length === 0 ? (
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>No bows saved — add a bow first from the dashboard.</div>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>No bows linked — session will be unlinked.</div>
               ) : (
                 <select className="f-input" value={selectedBowId} onChange={e => setSelectedBowId(e.target.value)}>
+                  <option value="">No bow selected</option>
                   {bows.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                 </select>
               )}
