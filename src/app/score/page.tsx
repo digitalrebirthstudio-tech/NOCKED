@@ -35,10 +35,17 @@ export default function ScorePage() {
   }, []);
 
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('nocked_sessions');
     if (saved) setSessions(JSON.parse(saved));
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = () => setOpenMenuId(null);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
   const deleteSession = (id: string) => {
@@ -134,7 +141,23 @@ export default function ScorePage() {
                       </div>
                       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                         <div style={{ fontSize: 12, color: '#ff5e1a', fontWeight: 600 }}>Resume →</div>
-                        <button className="delete-btn" onClick={(e) => { e.stopPropagation(); deleteSession(s.id); }}>DEL</button>
+                        {/* 3 dot menu */}
+                        <div style={{ position: 'relative' }}>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === s.id ? null : s.id); }}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: '4px 8px', fontSize: 20, lineHeight: 1, fontFamily: 'Inter, sans-serif', borderRadius: 6, transition: 'all 0.15s' }}
+                          >···</button>
+                          {openMenuId === s.id && (
+                            <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 4, background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, overflow: 'hidden', zIndex: 100, boxShadow: '0 8px 24px rgba(0,0,0,0.4)', minWidth: 140 }}>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setOpenMenuId(null); if (!confirm('Delete this session? This cannot be undone.')) return; const updated = sessions.filter(x => x.id !== s.id); setSessions(updated); localStorage.setItem('nocked_sessions', JSON.stringify(updated)); }}
+                                style={{ width: '100%', padding: '12px 16px', background: 'none', border: 'none', color: '#ff3b30', fontSize: 13, fontWeight: 600, textAlign: 'left', cursor: 'pointer', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 8, transition: 'background 0.15s' }}
+                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,59,48,0.1)'}
+                                onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                              >🗑 Delete Session</button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -159,20 +182,28 @@ export default function ScorePage() {
                         <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{s.bowName}</div>
                         <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{s.totalTargets} targets · {s.misses} misses</div>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <div style={{ textAlign: 'right' }}>
                           <div style={{ fontSize: 28, fontWeight: 800, color: '#ff5e1a', letterSpacing: -1 }}>{s.totalScore}</div>
                           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>/ {s.totalTargets * 12}</div>
                         </div>
-                        <button
-                          className="delete-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteSession(s.id);
-                          }}
-                        >
-                          DEL
-                        </button>
+                        {/* 3 dot menu */}
+                        <div style={{ position: 'relative' }}>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === s.id ? null : s.id); }}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: '4px 8px', fontSize: 20, lineHeight: 1, fontFamily: 'Inter, sans-serif', borderRadius: 6, transition: 'all 0.15s' }}
+                          >···</button>
+                          {openMenuId === s.id && (
+                            <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: 4, background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, overflow: 'hidden', zIndex: 100, boxShadow: '0 8px 24px rgba(0,0,0,0.4)', minWidth: 140 }}>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setOpenMenuId(null); if (!confirm('Delete this session? This cannot be undone.')) return; const updated = sessions.filter(x => x.id !== s.id); setSessions(updated); localStorage.setItem('nocked_sessions', JSON.stringify(updated)); }}
+                                style={{ width: '100%', padding: '12px 16px', background: 'none', border: 'none', color: '#ff3b30', fontSize: 13, fontWeight: 600, textAlign: 'left', cursor: 'pointer', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 8, transition: 'background 0.15s' }}
+                                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,59,48,0.1)'}
+                                onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                              >🗑 Delete Session</button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
