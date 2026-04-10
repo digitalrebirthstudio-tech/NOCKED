@@ -120,6 +120,7 @@ export default function Home() {
   const [angleDeg, setAngleDeg] = useState(18);
   const [activeTab, setActiveTab] = useState<'marks' | 'angle'>('marks');
   const [editingMark, setEditingMark] = useState<{ distance: number; value: string } | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     console.log('Auth check useEffect running');
@@ -158,6 +159,8 @@ export default function Home() {
               setBows(mapped);
               const last = [...mapped].sort((a: BowProfile, b: BowProfile) => b.lastUsed - a.lastUsed)[0];
               setActiveBow(last);
+            } else {
+              setShowOnboarding(true);
             }
           }).catch(e => console.error('getBows error:', e));
         }
@@ -327,6 +330,66 @@ export default function Home() {
 
   return (
     <>
+      {showOnboarding && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)',
+          backdropFilter: 'blur(8px)', zIndex: 100,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 24,
+        }}>
+          <div style={{
+            background: '#1a1a1a', borderRadius: 24, padding: 32,
+            maxWidth: 400, width: '100%',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.6)',
+          }}>
+            <div style={{ textAlign: 'center', marginBottom: 32 }}>
+              <div style={{ fontSize: 48, marginBottom: 16 }}>🏹</div>
+              <h2 style={{ fontSize: 26, fontWeight: 900, color: '#fff', margin: 0, letterSpacing: -0.5 }}>
+                Welcome to <span style={{ color: '#ff5e1a' }}>Nocked</span>
+              </h2>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginTop: 10, lineHeight: 1.6 }}>
+                Let's get you set up. First, add your bow to start calculating accurate sight marks.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[
+                { step: '01', title: 'Add your bow', desc: 'Enter your bow specs and calibration marks' },
+                { step: '02', title: 'Get your marks', desc: 'We calculate accurate sight marks for every distance' },
+                { step: '03', title: 'Track your scores', desc: 'Log sessions and analyze your performance over time' },
+              ].map(({ step, title, desc }) => (
+                <div key={step} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 16px', background: 'rgba(255,255,255,0.04)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(255,94,26,0.15)', border: '1px solid rgba(255,94,26,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: '#ff5e1a', flexShrink: 0 }}>{step}</div>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{title}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              className="main-btn"
+              style={{ marginTop: 24 }}
+              onClick={() => {
+                setShowOnboarding(false);
+                handleNewBow();
+              }}
+            >
+              Add My First Bow →
+            </button>
+
+            <button
+              onClick={() => setShowOnboarding(false)}
+              style={{ width: '100%', marginTop: 10, background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: 13, cursor: 'pointer', fontFamily: 'Inter, sans-serif', padding: '8px 0' }}
+            >
+              Skip for now
+            </button>
+          </div>
+        </div>
+      )}
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
