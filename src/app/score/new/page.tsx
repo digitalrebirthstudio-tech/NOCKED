@@ -26,6 +26,36 @@ export default function NewSessionPage() {
     temperature: '',
     conditions: 'Clear' as 'Clear' | 'Cloudy' | 'Rain' | 'Windy',
   });
+  const [weatherLoaded, setWeatherLoaded] = useState(false);
+  const [weatherError, setWeatherError] = useState(false);
+
+  const fetchWeather = async () => {
+    setWeatherError(false);
+    try {
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject)
+      );
+      const { latitude, longitude } = pos.coords;
+      const res = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code&temperature_unit=fahrenheit&wind_speed_unit=mph`
+      );
+      const data = await res.json();
+      const current = data.current;
+      const code = current.weather_code;
+      const conditions = code === 0 ? 'Clear' : code <= 3 ? 'Cloudy' : code <= 67 ? 'Rain' : 'Windy';
+      const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+      const windDir = dirs[Math.round(current.wind_direction_10m / 45) % 8];
+      setWeather({
+        windSpeed: Math.round(current.wind_speed_10m).toString(),
+        windDirection: windDir,
+        temperature: Math.round(current.temperature_2m).toString(),
+        conditions,
+      });
+      setWeatherLoaded(true);
+    } catch (e) {
+      setWeatherError(true);
+    }
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -40,6 +70,7 @@ export default function NewSessionPage() {
         setSelectedBowId(mapped[0].id);
       }
     });
+    fetchWeather();
   }, []);
 
   const SESSION_TYPES: { type: SessionType; emoji: string; desc: string; defaultTargets: number }[] = [
@@ -174,43 +205,62 @@ export default function NewSessionPage() {
 
           {/* WEATHER */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>Weather Conditions (optional)</div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>Weather Conditions</div>
             <div className="glass-card" style={{ padding: 16 }}>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
-                {(['Clear', 'Cloudy', 'Rain', 'Windy'] as const).map(c => (
-                  <button key={c} onClick={() => setWeather(w => ({ ...w, conditions: c }))}
-                    style={{
-                      padding: '6px 14px', borderRadius: 100, border: '1px solid',
-                      borderColor: weather.conditions === c ? '#ff5e1a' : 'rgba(255,255,255,0.08)',
-                      background: weather.conditions === c ? 'rgba(255,94,26,0.15)' : 'rgba(255,255,255,0.04)',
-                      color: weather.conditions === c ? '#ff5e1a' : 'rgba(255,255,255,0.5)',
-                      fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                      fontFamily: 'Inter, sans-serif', transition: 'all 0.15s',
-                    }}>
-                    {c === 'Clear' ? '☀️' : c === 'Cloudy' ? '☁️' : c === 'Rain' ? '🌧️' : '💨'} {c}
-                  </button>
-                ))}
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 5 }}>Wind Speed (mph)</div>
-                  <input className="f-input" type="number" placeholder="e.g. 10"
-                    value={weather.windSpeed}
-                    onChange={e => setWeather(w => ({ ...w, windSpeed: e.target.value }))} />
+              {!weatherLoaded && !weatherError && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>
+                  <div style={{ width: 16, height: 16, border: '2px solid #ff5e1a', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                  Fetching current weather...
+                  <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                 </div>
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 5 }}>Wind Direction</div>
-                  <input className="f-input" type="text" placeholder="e.g. NW"
-                    value={weather.windDirection}
-                    onChange={e => setWeather(w => ({ ...w, windDirection: e.target.value }))} />
+              )}
+              {weatherError && (
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>
+                  Could not get location. <button onClick={fetchWeather} style={{ background: 'none', border: 'none', color: '#ff5e1a', cursor: 'pointer', fontSize: 13, fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>Retry</button>
                 </div>
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 5 }}>Temperature (°F)</div>
-                  <input className="f-input" type="number" placeholder="e.g. 65"
-                    value={weather.temperature}
-                    onChange={e => setWeather(w => ({ ...w, temperature: e.target.value }))} />
-                </div>
-              </div>
+              )}
+              {weatherLoaded && (
+                <>
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                    {(['Clear', 'Cloudy', 'Rain', 'Windy'] as const).map(c => (
+                      <button key={c} onClick={() => setWeather(w => ({ ...w, conditions: c }))}
+                        style={{
+                          padding: '6px 14px', borderRadius: 100, border: '1px solid',
+                          borderColor: weather.conditions === c ? '#ff5e1a' : 'rgba(255,255,255,0.08)',
+                          background: weather.conditions === c ? 'rgba(255,94,26,0.15)' : 'rgba(255,255,255,0.04)',
+                          color: weather.conditions === c ? '#ff5e1a' : 'rgba(255,255,255,0.5)',
+                          fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                          fontFamily: 'Inter, sans-serif', transition: 'all 0.15s',
+                        }}>
+                        {c === 'Clear' ? '☀️' : c === 'Cloudy' ? '☁️' : c === 'Rain' ? '🌧️' : '💨'} {c}
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 5 }}>Wind Speed (mph)</div>
+                      <input className="f-input" type="number"
+                        value={weather.windSpeed}
+                        onChange={e => setWeather(w => ({ ...w, windSpeed: e.target.value }))} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 5 }}>Wind Direction</div>
+                      <input className="f-input" type="text"
+                        value={weather.windDirection}
+                        onChange={e => setWeather(w => ({ ...w, windDirection: e.target.value }))} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 5 }}>Temperature (°F)</div>
+                      <input className="f-input" type="number"
+                        value={weather.temperature}
+                        onChange={e => setWeather(w => ({ ...w, temperature: e.target.value }))} />
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 10, fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>
+                    Auto-detected · tap any field to edit
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
