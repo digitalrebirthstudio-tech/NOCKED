@@ -30,17 +30,40 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { router.push('/landing'); return; }
       setUser(session.user);
+
+      // Load bows from Supabase
+      const { data: bowsData } = await supabase
+        .from('bows')
+        .select('*')
+        .eq('user_id', session.user.id);
+      if (bowsData) setBows(bowsData.map((b: any) => ({
+        id: b.id,
+        name: b.name,
+        bowType: b.bow_type,
+        arrowSpeed: b.arrow_speed,
+        arrowWeight: b.arrow_weight,
+      })));
+
+      // Load sessions from Supabase
+      const { data: sessionsData } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .eq('completed', true);
+      if (sessionsData) setSessions(sessionsData.map((s: any) => ({
+        id: s.id,
+        totalScore: s.total_score,
+        totalTargets: s.total_targets,
+        type: s.type,
+        date: s.date,
+        completed: s.completed,
+      })));
+
       setLoading(false);
     });
-
-    const saved = localStorage.getItem('nocked_bows');
-    if (saved) setBows(JSON.parse(saved));
-
-    const savedSessions = localStorage.getItem('nocked_sessions');
-    if (savedSessions) setSessions(JSON.parse(savedSessions));
   }, []);
 
   const handleSignOut = async () => {
