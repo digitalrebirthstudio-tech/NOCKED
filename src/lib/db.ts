@@ -32,6 +32,7 @@ export async function saveBow(userId: string, bow: any) {
       marks: bow.marks,
       last_used: bow.lastUsed,
       bow_type: bow.bowType || 'target',
+      mark_overrides: bow.markOverrides || {},
     }, { onConflict: 'id' });
   if (error) throw error;
   return data;

@@ -57,6 +57,7 @@ interface BowProfile {
   broadheadWeight?: number;
   pin1?: number; pin2?: number; pin3?: number; pin4?: number; pin5?: number; pin6?: number;
   ke?: number;
+  markOverrides?: Record<number, number>;
 }
 
 function calculateSightMarks({
@@ -118,6 +119,7 @@ export default function Home() {
   const [angleDist, setAngleDist] = useState(40);
   const [angleDeg, setAngleDeg] = useState(18);
   const [activeTab, setActiveTab] = useState<'marks' | 'angle'>('marks');
+  const [editingMark, setEditingMark] = useState<{ distance: number; value: string } | null>(null);
 
   useEffect(() => {
     console.log('Auth check useEffect running');
@@ -151,6 +153,7 @@ export default function Home() {
                 marks: b.marks || [],
                 lastUsed: b.last_used,
                 bowType: b.bow_type || 'target',
+                markOverrides: b.mark_overrides || {},
               }));
               setBows(mapped);
               const last = [...mapped].sort((a: BowProfile, b: BowProfile) => b.lastUsed - a.lastUsed)[0];
@@ -306,7 +309,11 @@ export default function Home() {
       calibDist2: activeBow.calibDist2,
       calibMark2: parseFloat(activeBow.calibMark2),
       sightResolution: activeBow.sightResolution,
-    });
+    }).map(m => ({
+      ...m,
+      mark: activeBow.markOverrides?.[m.distance] ?? m.mark,
+      isOverridden: activeBow.markOverrides?.[m.distance] !== undefined,
+    }));
 
     if (gameMode === 'All') return allMarks;
     const allowed = gameMode === 'Field' ? FIELD_DISTANCES :
@@ -581,13 +588,57 @@ export default function Home() {
                                         {m.distance}<small style={{ color: 'rgba(255,255,255,0.2)', fontSize: 10 }}>{unit}</small>
                                         {isCalib && <span style={{ display: 'inline-block', width: 5, height: 5, background: '#ff5e1a', borderRadius: '50%', marginLeft: 5, verticalAlign: 'middle' }} />}
                                       </td>
-                                      <td style={{ padding: '11px 16px', fontSize: 14, fontWeight: 600, color: '#fff', textAlign: 'right' }}>{m.mark}</td>
+                                      <td style={{ padding: '11px 16px', fontSize: 14, fontWeight: 600, color: m.isOverridden ? '#ff5e1a' : '#fff', textAlign: 'right', textDecoration: m.isOverridden ? 'underline' : 'none' }}>
+                                        {m.mark}
+                                        {m.isOverridden && (
+                                          <button
+                                            onClick={() => {
+                                              const overrides = { ...(activeBow?.markOverrides || {}) };
+                                              delete overrides[m.distance];
+                                              const updated = bows.map(b => b.id === activeBow?.id ? { ...b, markOverrides: overrides } : b);
+                                              saveBows(updated);
+                                              setActiveBow({ ...activeBow!, markOverrides: overrides });
+                                            }}
+                                            style={{ marginLeft: 6, background: 'none', border: 'none', color: 'rgba(255,94,26,0.5)', fontSize: 10, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                                          >↺</button>
+                                        )}
+                                      </td>
                                       <td style={{ padding: '11px 16px', fontSize: 14, fontWeight: 700, color: hasModifier ? '#ff5e1a' : 'rgba(255,255,255,0.15)', textAlign: 'right' }}>
                                         {hasModifier ? modMark(m.mark) : '—'}
                                       </td>
                                       <td style={{ padding: '11px 16px', fontSize: 12, fontWeight: 600, color: '#60a5fa', textAlign: 'right' }}>—</td>
                                       <td style={{ padding: '11px 16px', textAlign: 'right' }}>
-                                        <button className="edit-btn">EDIT</button>
+                                        {editingMark?.distance === m.distance ? (
+                                          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }}>
+                                            <input
+                                              type="number"
+                                              step="0.01"
+                                              value={editingMark.value}
+                                              onChange={e => setEditingMark({ ...editingMark, value: e.target.value })}
+                                              style={{ width: 70, background: 'rgba(255,255,255,0.08)', border: '1px solid #ff5e1a', borderRadius: 8, padding: '4px 8px', fontSize: 13, fontWeight: 600, color: '#fff', outline: 'none', fontFamily: 'Inter, sans-serif', textAlign: 'center' }}
+                                              autoFocus
+                                            />
+                                            <button
+                                              onClick={() => {
+                                                const overrides = { ...(activeBow?.markOverrides || {}), [m.distance]: parseFloat(editingMark.value) };
+                                                const updated = bows.map(b => b.id === activeBow?.id ? { ...b, markOverrides: overrides } : b);
+                                                saveBows(updated);
+                                                setActiveBow({ ...activeBow!, markOverrides: overrides });
+                                                setEditingMark(null);
+                                              }}
+                                              style={{ background: '#ff5e1a', border: 'none', borderRadius: 6, padding: '4px 8px', fontSize: 11, fontWeight: 700, color: '#fff', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                                            >✓</button>
+                                            <button
+                                              onClick={() => setEditingMark(null)}
+                                              style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 6, padding: '4px 8px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                                            >✕</button>
+                                          </div>
+                                        ) : (
+                                          <button
+                                            className="edit-btn"
+                                            onClick={() => setEditingMark({ distance: m.distance, value: String(m.mark) })}
+                                          >EDIT</button>
+                                        )}
                                       </td>
                                     </tr>
                                   );
