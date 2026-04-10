@@ -37,7 +37,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, background: '#141414', color: '#fff' }}>
+      <body style={{ margin: 0, background: '#141414', color: '#fff', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
         <Header />
         {children}
         <BottomNav />

@@ -128,7 +128,7 @@ export default function ScorePage() {
 
         {/* Hero section */}
         <div style={{ padding: '32px 24px 8px' }}>
-          <h2 style={{ fontSize: 48, fontWeight: 900, color: '#fff', letterSpacing: '-2px', lineHeight: 1.05, margin: 0, textTransform: 'uppercase' }}>
+          <h2 style={{ fontSize: 36, fontWeight: 900, color: '#fff', letterSpacing: '-1px', lineHeight: 1.05, margin: 0, textTransform: 'uppercase' }}>
             PRECISION <span style={{ color: '#ff5e1a' }}>TRACKING</span>
           </h2>
           <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: 8, fontWeight: 600 }}>

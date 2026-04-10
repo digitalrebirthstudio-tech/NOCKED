@@ -207,13 +207,13 @@ export default function SessionPage() {
               <div style={{ marginBottom: 16 }}>
                 {session.yardageType === 'unknown' ? (
                   <>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Distance (yards) — <span style={{ color: 'rgba(255,255,255,0.2)' }}>optional</span></div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', marginBottom: 6 }}>Distance (yards) — <span style={{ color: 'rgba(255,255,255,0.2)' }}>optional</span></div>
                     <input className="f-input" type="number" placeholder="Unknown yardage — enter if known"
                       value={distanceInput} onChange={e => setDistanceInput(e.target.value)} />
                   </>
                 ) : (
                   <>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Distance (yards)</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', marginBottom: 6 }}>Distance (yards)</div>
                     <input className="f-input" type="number" placeholder="Enter distance e.g. 35"
                       value={distanceInput} onChange={e => setDistanceInput(e.target.value)} />
                   </>
@@ -221,7 +221,7 @@ export default function SessionPage() {
               </div>
 
               {/* SCORE BUTTONS */}
-              <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 10 }}>Tap to Score</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>Tap to Score</div>
               <div style={{ display: 'flex', gap: 8 }}>
                 {SCORE_VALUES.map(score => (
                   <button key={score} className="score-btn"
