@@ -20,6 +20,12 @@ export default function NewSessionPage() {
   const [sessionType, setSessionType] = useState<SessionType>('Practice');
   const [targetCount, setTargetCount] = useState(20);
   const [yardageType, setYardageType] = useState<'known' | 'unknown'>('known');
+  const [weather, setWeather] = useState({
+    windSpeed: '',
+    windDirection: '',
+    temperature: '',
+    conditions: 'Clear' as 'Clear' | 'Cloudy' | 'Rain' | 'Windy',
+  });
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -59,6 +65,7 @@ export default function NewSessionPage() {
       misses: 0,
       targets,
       completed: false,
+      weather: weather,
     };
     const { data: { session: authSession } } = await supabase.auth.getSession();
     if (authSession) {
@@ -162,6 +169,48 @@ export default function NewSessionPage() {
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* WEATHER */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>Weather Conditions (optional)</div>
+            <div className="glass-card" style={{ padding: 16 }}>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                {(['Clear', 'Cloudy', 'Rain', 'Windy'] as const).map(c => (
+                  <button key={c} onClick={() => setWeather(w => ({ ...w, conditions: c }))}
+                    style={{
+                      padding: '6px 14px', borderRadius: 100, border: '1px solid',
+                      borderColor: weather.conditions === c ? '#ff5e1a' : 'rgba(255,255,255,0.08)',
+                      background: weather.conditions === c ? 'rgba(255,94,26,0.15)' : 'rgba(255,255,255,0.04)',
+                      color: weather.conditions === c ? '#ff5e1a' : 'rgba(255,255,255,0.5)',
+                      fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                      fontFamily: 'Inter, sans-serif', transition: 'all 0.15s',
+                    }}>
+                    {c === 'Clear' ? '☀️' : c === 'Cloudy' ? '☁️' : c === 'Rain' ? '🌧️' : '💨'} {c}
+                  </button>
+                ))}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 5 }}>Wind Speed (mph)</div>
+                  <input className="f-input" type="number" placeholder="e.g. 10"
+                    value={weather.windSpeed}
+                    onChange={e => setWeather(w => ({ ...w, windSpeed: e.target.value }))} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 5 }}>Wind Direction</div>
+                  <input className="f-input" type="text" placeholder="e.g. NW"
+                    value={weather.windDirection}
+                    onChange={e => setWeather(w => ({ ...w, windDirection: e.target.value }))} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 5 }}>Temperature (°F)</div>
+                  <input className="f-input" type="number" placeholder="e.g. 65"
+                    value={weather.temperature}
+                    onChange={e => setWeather(w => ({ ...w, temperature: e.target.value }))} />
+                </div>
+              </div>
             </div>
           </div>
 

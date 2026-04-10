@@ -28,7 +28,8 @@ export default function AnalysisPage() {
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { router.push('/landing'); return; }
-      const data = await getSessions(session.user.id).catch(() => []);
+      const data = await getSessions(session.user.id).catch((e) => { console.error('getSessions error:', e); return []; });
+      console.log('analysis getSessions raw:', data);
       if (data) {
         const mapped = data.map((s: any) => ({
           id: s.id,
@@ -41,6 +42,7 @@ export default function AnalysisPage() {
           targets: s.targets || [],
           completed: s.completed,
         })).filter((s: Session) => s.completed);
+        console.log('analysis mapped+filtered sessions:', mapped);
         setSessions(mapped);
       }
       setLoading(false);

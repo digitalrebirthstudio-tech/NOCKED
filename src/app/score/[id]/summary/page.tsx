@@ -23,6 +23,7 @@ interface Session {
   misses: number;
   targets: Target[];
   completed: boolean;
+  weather?: { conditions?: string; windSpeed?: string; windDirection?: string; temperature?: string } | null;
 }
 
 const SCORE_COLORS: Record<number, string> = {
@@ -55,6 +56,7 @@ export default function SummaryPage() {
           misses: data.misses,
           targets: data.targets,
           completed: true,
+          weather: data.weather_conditions || null,
         });
       }
     });
@@ -143,6 +145,21 @@ export default function SummaryPage() {
             <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.3)', marginTop: 6 }}>out of {maxPossible}</div>
           </div>
 
+          {session.weather && (session.weather.conditions || session.weather.windSpeed) && (
+            <div className="glass-card" style={{ padding: '16px 18px' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ff5e1a', marginBottom: 12 }}>Weather Conditions</div>
+              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                {session.weather.conditions && (
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>
+                    {session.weather.conditions === 'Clear' ? '☀️' : session.weather.conditions === 'Cloudy' ? '☁️' : session.weather.conditions === 'Rain' ? '🌧️' : '💨'} {session.weather.conditions}
+                  </div>
+                )}
+                {session.weather.windSpeed && <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>💨 {session.weather.windSpeed} mph {session.weather.windDirection}</div>}
+                {session.weather.temperature && <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>🌡️ {session.weather.temperature}°F</div>}
+              </div>
+            </div>
+          )}
+
           {/* STAT GRID */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {[
@@ -225,7 +242,14 @@ export default function SummaryPage() {
             {session.targets.map((t, i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr 60px 60px', padding: '10px 18px', borderTop: '1px solid rgba(255,255,255,0.04)', alignItems: 'center' }}>
                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>{i + 1}</div>
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>{t.distance ? `${t.distance} yd` : '—'}</div>
+                <div>
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>{t.distance ? `${t.distance} yd` : '—'}</div>
+                  {t.notes && (
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 3, fontStyle: 'italic' }}>
+                      {t.notes}
+                    </div>
+                  )}
+                </div>
                 <div style={{ fontSize: 15, fontWeight: 800, color: t.score !== null ? SCORE_COLORS[t.score] : 'rgba(255,255,255,0.2)' }}>
                   {t.score !== null ? t.score : '—'}
                 </div>

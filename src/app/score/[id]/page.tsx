@@ -232,6 +232,40 @@ export default function SessionPage() {
                   </button>
                 ))}
               </div>
+
+              {/* NOTES */}
+              <div style={{ marginTop: 14 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Notes (optional)</div>
+                <textarea
+                  placeholder="e.g. wind from left, misjudged distance..."
+                  value={target.notes || ''}
+                  onChange={e => {
+                    if (!session) return;
+                    const updatedTargets = session.targets.map((t, i) =>
+                      i === currentTarget ? { ...t, notes: e.target.value } : t
+                    );
+                    const updated = { ...session, targets: updatedTargets };
+                    saveSessionData(updated);
+                  }}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 12,
+                    padding: '10px 13px',
+                    fontSize: 13,
+                    fontWeight: 400,
+                    fontFamily: 'Inter, sans-serif',
+                    color: '#fff',
+                    outline: 'none',
+                    resize: 'none',
+                    height: 72,
+                    transition: 'border-color 0.15s',
+                  }}
+                  onFocus={e => e.target.style.borderColor = '#ff5e1a'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+                />
+              </div>
             </div>
           </div>
 

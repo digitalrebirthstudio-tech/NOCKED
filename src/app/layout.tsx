@@ -38,6 +38,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body style={{ margin: 0, background: '#141414', color: '#fff', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            try {
+              const theme = localStorage.getItem('nocked_theme') || 'dark';
+              document.body.style.background = theme === 'light' ? '#f5f5f5' : '#141414';
+              document.body.style.color = theme === 'light' ? '#111' : '#fff';
+            } catch(e) {}
+          `
+        }} />
         <Header />
         {children}
         <BottomNav />

@@ -73,6 +73,7 @@ export async function saveSession(userId: string, session: any) {
       targets: session.targets,
       completed: session.completed,
       yardage_type: session.yardageType || 'known',
+      weather_conditions: session.weather || null,
     }, { onConflict: 'id' });
   if (error) throw error;
   return data;
