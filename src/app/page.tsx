@@ -462,7 +462,7 @@ export default function Home() {
                         {heroBow.marks && (
                           <div style={{ marginTop: 14, display: 'flex', gap: 8, alignItems: 'center' }}>
                             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>Tap to view marks</div>
-                            <div style={{ fontSize: 14, color: '#ff5e1a' }}>→</div>
+                            <div style={{ fontSize: 14, color: '#ff5e1a' }}>↓</div>
                           </div>
                         )}
                       </div>
