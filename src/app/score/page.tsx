@@ -96,7 +96,6 @@ export default function ScorePage() {
 
       <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 120 }}>
 
-
         {/* Hero section */}
         <div style={{ padding: '32px 24px 8px' }}>
           <h2 style={{ fontSize: 48, fontWeight: 900, color: '#fff', letterSpacing: '-2px', lineHeight: 1.05, margin: 0, textTransform: 'uppercase' }}>
@@ -106,6 +105,7 @@ export default function ScorePage() {
             Telemetry Dashboard // v2.0.4
           </p>
         </div>
+
 
         <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
 

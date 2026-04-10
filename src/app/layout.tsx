@@ -1,3 +1,4 @@
+// v1.1 - force redeploy
 import type { Metadata } from 'next';
 import './globals.css';
 import BottomNav from '@/components/BottomNav';
