@@ -625,11 +625,43 @@ export default function Home() {
                                       <td style={{ padding: '11px 16px', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.4)', textAlign: 'left' }}>
                                         {ft}<small style={{ color: 'rgba(255,255,255,0.2)', fontSize: 10 }}>ft</small>
                                       </td>
-                                      <td style={{ padding: '11px 16px', fontSize: 14, fontWeight: 600, color: '#fff', textAlign: 'right' }}>{mark}</td>
+                                      <td style={{ padding: '11px 16px', fontSize: 14, fontWeight: 600, color: activeBow?.markOverrides?.[-(ft)] ? '#ff5e1a' : '#fff', textAlign: 'right', textDecoration: activeBow?.markOverrides?.[-(ft)] ? 'underline' : 'none' }}>
+                                        {activeBow?.markOverrides?.[-(ft)] ?? mark}
+                                      </td>
                                       <td style={{ padding: '11px 16px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.15)', textAlign: 'right' }}>—</td>
                                       <td style={{ padding: '11px 16px', fontSize: 12, fontWeight: 600, color: '#60a5fa', textAlign: 'right' }}>—</td>
                                       <td style={{ padding: '11px 16px', textAlign: 'right' }}>
-                                        <button className="edit-btn">EDIT</button>
+                                        {editingMark?.distance === -(ft) ? (
+                                          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }}>
+                                            <input
+                                              type="number"
+                                              step="0.01"
+                                              value={editingMark.value}
+                                              onChange={e => setEditingMark({ ...editingMark, value: e.target.value })}
+                                              style={{ width: 70, background: 'rgba(255,255,255,0.08)', border: '1px solid #ff5e1a', borderRadius: 8, padding: '4px 8px', fontSize: 13, fontWeight: 600, color: '#fff', outline: 'none', fontFamily: 'Inter, sans-serif', textAlign: 'center' }}
+                                              autoFocus
+                                            />
+                                            <button
+                                              onClick={() => {
+                                                const overrides = { ...(activeBow?.markOverrides || {}), [-(ft)]: parseFloat(editingMark.value) };
+                                                const updated = bows.map(b => b.id === activeBow?.id ? { ...b, markOverrides: overrides } : b);
+                                                saveBows(updated);
+                                                setActiveBow({ ...activeBow!, markOverrides: overrides });
+                                                setEditingMark(null);
+                                              }}
+                                              style={{ background: '#ff5e1a', border: 'none', borderRadius: 6, padding: '4px 8px', fontSize: 11, fontWeight: 700, color: '#fff', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                                            >✓</button>
+                                            <button
+                                              onClick={() => setEditingMark(null)}
+                                              style={{ background: 'rgba(255,255,255,0.06)', border: 'none', borderRadius: 6, padding: '4px 8px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                                            >✕</button>
+                                          </div>
+                                        ) : (
+                                          <button
+                                            className="edit-btn"
+                                            onClick={() => setEditingMark({ distance: -(ft), value: String(activeBow?.markOverrides?.[-(ft)] ?? mark) })}
+                                          >EDIT</button>
+                                        )}
                                       </td>
                                     </tr>
                                   );
