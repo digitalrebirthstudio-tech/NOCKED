@@ -126,111 +126,122 @@ export default function ScorePage() {
 
           <button className="main-btn" onClick={() => router.push('/score/new')}>+ Start New Session</button>
 
-          {/* ACTIVE SESSIONS */}
-          {activeSessions.length > 0 && (
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>In Progress</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {activeSessions.map(s => (
-                  <div key={s.id} className="session-card" onClick={() => router.push(`/score/${s.id}`)}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: typeColor(s.type), background: `${typeColor(s.type)}18`, padding: '2px 8px', borderRadius: 6, letterSpacing: '0.04em' }}>{s.type}</span>
-                          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{new Date(s.date).toLocaleDateString()}</span>
-                        </div>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{s.bowName}</div>
-                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>
-                          {s.targets.filter(t => t.score !== null).length} / {s.totalTargets} targets · Score: {s.totalScore}
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <div style={{ fontSize: 12, color: '#ff5e1a', fontWeight: 600 }}>Resume →</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, alignItems: 'start' }}>
+
+            {/* LEFT — empty state or sessions list */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {sessions.length === 0 ? (
+                <div style={{
+                  background: 'rgba(28,27,27,1)', borderRadius: 16, padding: 32,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  justifyContent: 'center', minHeight: 300, position: 'relative', overflow: 'hidden',
+                }}>
+                  <div style={{ position: 'absolute', top: 0, right: 0, width: 120, height: 120, borderRight: '1px solid rgba(255,94,26,0.15)', borderTop: '1px solid rgba(255,94,26,0.15)' }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, width: 60, height: 60, borderLeft: '1px solid rgba(255,94,26,0.15)', borderBottom: '1px solid rgba(255,94,26,0.15)' }} />
+                  <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 32, color: 'rgba(255,255,255,0.2)' }}>target</span>
+                  </div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 8, textAlign: 'center' }}>No sessions yet</div>
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textAlign: 'center', maxWidth: 240, lineHeight: 1.6, marginBottom: 24 }}>
+                    Your kinetic data is waiting. Start your first session.
+                  </div>
+                  <button className="main-btn" style={{ width: 'auto', padding: '12px 24px' }} onClick={() => router.push('/score/new')}>
+                    + Start New Session
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {activeSessions.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>In Progress</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {activeSessions.map(s => (
+                          <div key={s.id} className="session-card" onClick={() => router.push(`/score/${s.id}`)}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                              <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                                  <span style={{ fontSize: 11, fontWeight: 700, color: typeColor(s.type), background: `${typeColor(s.type)}18`, padding: '2px 8px', borderRadius: 6 }}>{s.type}</span>
+                                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{new Date(s.date).toLocaleDateString()}</span>
+                                </div>
+                                <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{s.bowName}</div>
+                                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>
+                                  {s.targets.filter((t: any) => t.score !== null).length} / {s.totalTargets} targets · Score: {s.totalScore}
+                                </div>
+                              </div>
+                              <div style={{ fontSize: 12, color: '#ff5e1a', fontWeight: 600 }}>Resume →</div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+                  )}
 
-          {/* COMPLETED SESSIONS */}
-          {completedSessions.length > 0 && (
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10, marginTop: 4 }}>Past Sessions</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {completedSessions.map(s => (
-                  <div key={s.id} className="session-card" onClick={() => router.push(`/score/${s.id}/summary`)}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: typeColor(s.type), background: `${typeColor(s.type)}18`, padding: '2px 8px', borderRadius: 6 }}>{s.type}</span>
-                          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{new Date(s.date).toLocaleDateString()}</span>
-                        </div>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{s.bowName}</div>
-                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{s.totalTargets} targets · {s.misses} misses</div>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: 28, fontWeight: 800, color: '#ff5e1a', letterSpacing: -1 }}>{s.totalScore}</div>
-                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>/ {s.totalTargets * 12}</div>
+                  {completedSessions.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>Past Sessions</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {completedSessions.map(s => (
+                          <div key={s.id} className="session-card" onClick={() => router.push(`/score/${s.id}/summary`)}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                                  <span style={{ fontSize: 11, fontWeight: 700, color: typeColor(s.type), background: `${typeColor(s.type)}18`, padding: '2px 8px', borderRadius: 6 }}>{s.type}</span>
+                                  <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{new Date(s.date).toLocaleDateString()}</span>
+                                </div>
+                                <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{s.bowName}</div>
+                                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{s.totalTargets} targets · {s.misses} misses</div>
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontSize: 28, fontWeight: 800, color: '#ff5e1a', letterSpacing: -1 }}>{s.totalScore}</div>
+                                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>/ {s.totalTargets * 12}</div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* RIGHT — always visible stats */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ background: '#0e0e0e', borderRadius: 14, padding: 18, borderLeft: '2px solid rgba(255,94,26,0.3)' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 12 }}>Avg. Score</div>
+                {completedSessions.length > 0 ? (
+                  <div style={{ fontSize: 28, fontWeight: 900, color: '#ff5e1a' }}>
+                    {(completedSessions.reduce((sum, s) => sum + s.totalScore, 0) / completedSessions.length).toFixed(1)}
                   </div>
-                ))}
+                ) : (
+                  <>
+                    <div style={{ height: 24, width: '75%', background: 'rgba(255,255,255,0.06)', borderRadius: 6 }} />
+                    <div style={{ marginTop: 10, fontSize: 10, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Awaiting Data</div>
+                  </>
+                )}
+              </div>
+
+              <div style={{ background: '#0e0e0e', borderRadius: 14, padding: 18, borderLeft: '2px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>Total Arrows</div>
+                <div style={{ fontSize: 32, fontWeight: 900, color: completedSessions.length > 0 ? '#fff' : 'rgba(255,255,255,0.15)' }}>
+                  {completedSessions.reduce((sum, s) => sum + s.totalTargets, 0)}
+                </div>
+                <div style={{ marginTop: 6, fontSize: 10, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Lifetime Count</div>
+              </div>
+
+              <div style={{ background: 'rgba(28,27,27,1)', borderRadius: 14, padding: 18 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#ff5e1a', marginBottom: 12 }}>Last Session</div>
+                {completedSessions.length > 0 ? (
+                  <div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>{completedSessions[0].totalScore}</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>{completedSessions[0].type} · {new Date(completedSessions[0].date).toLocaleDateString()}</div>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>No sessions yet</div>
+                )}
               </div>
             </div>
-          )}
-
-          {sessions.length === 0 && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
-
-              {/* Main empty state card — spans 2 cols */}
-              <div style={{
-                gridColumn: 'span 2', background: 'rgba(28,27,27,1)',
-                borderRadius: 16, padding: 32, display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center', minHeight: 400,
-                position: 'relative', overflow: 'hidden',
-              }}>
-                <div style={{ position: 'absolute', top: 0, right: 0, width: 120, height: 120, borderRight: '1px solid rgba(255,94,26,0.15)', borderTop: '1px solid rgba(255,94,26,0.15)' }} />
-                <div style={{ position: 'absolute', bottom: 0, left: 0, width: 60, height: 60, borderLeft: '1px solid rgba(255,94,26,0.15)', borderBottom: '1px solid rgba(255,94,26,0.15)' }} />
-
-                <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 40, color: 'rgba(255,255,255,0.2)' }}>target</span>
-                </div>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 12, textAlign: 'center' }}>No sessions yet</div>
-                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', textAlign: 'center', maxWidth: 280, lineHeight: 1.6, marginBottom: 32 }}>
-                  Your kinetic data is waiting. Start your first scoring session to calibrate your performance metrics.
-                </div>
-                <button className="main-btn" style={{ width: 'auto', padding: '14px 28px' }} onClick={() => router.push('/score/new')}>
-                  + Start New Session
-                </button>
-              </div>
-
-              {/* Stats side panel */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-
-                {/* Avg score */}
-                <div style={{ background: '#0e0e0e', borderRadius: 14, padding: 20, borderLeft: '2px solid rgba(255,94,26,0.2)' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 16 }}>Avg. Score</div>
-                  <div style={{ height: 28, width: '75%', background: 'rgba(255,255,255,0.06)', borderRadius: 6 }} />
-                  <div style={{ marginTop: 12, fontSize: 10, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Awaiting Data</div>
-                </div>
-
-                {/* Total arrows */}
-                <div style={{ background: '#0e0e0e', borderRadius: 14, padding: 20, borderLeft: '2px solid rgba(255,255,255,0.08)' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>Total Arrows</div>
-                  <div style={{ fontSize: 36, fontWeight: 900, color: 'rgba(255,255,255,0.15)' }}>0</div>
-                  <div style={{ marginTop: 8, fontSize: 10, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Lifetime Count</div>
-                </div>
-
-                {/* Last calibration */}
-                <div style={{ background: 'rgba(28,27,27,1)', borderRadius: 14, padding: 20, flex: 1 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#ff5e1a', marginBottom: 16 }}>Last Calibration</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginTop: 8, textTransform: 'uppercase', letterSpacing: '0.08em' }}>No active sight marks</div>
-                </div>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </>
