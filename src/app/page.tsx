@@ -515,8 +515,62 @@ export default function Home() {
                   <button className="main-btn" onClick={handleNewBow}>+ Add New Bow</button>
 
                   {/* MARKS / ANGLE TABS for active bow */}
-                  {activeBow?.marks && (
+                  {activeBow?.marks !== undefined && (
                     <div id="marks-section" style={{ marginTop: 8 }}>
+                    {activeBow.bowType === 'hunting' ? (
+                      /* HUNTING BOW STATS */
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginTop: 8 }}>Bow Stats</div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                          {[
+                            { label: 'Kinetic Energy', value: activeBow.arrowSpeed && activeBow.arrowWeight ? `${((activeBow.arrowWeight * activeBow.arrowSpeed * activeBow.arrowSpeed) / 450240).toFixed(1)} ft-lbs` : '—' },
+                            { label: 'Arrow Speed', value: activeBow.arrowSpeed ? `${activeBow.arrowSpeed} fps` : '—' },
+                            { label: 'Arrow Weight', value: activeBow.arrowWeight ? `${activeBow.arrowWeight} gr` : '—' },
+                            { label: 'Draw Weight', value: (activeBow as any).drawWeight ? `${(activeBow as any).drawWeight} lbs` : '—' },
+                            { label: 'Draw Length', value: (activeBow as any).drawLength ? `${(activeBow as any).drawLength}"` : '—' },
+                            { label: 'Broadhead', value: (activeBow as any).broadheadWeight ? `${(activeBow as any).broadheadWeight} gr` : '—' },
+                          ].map(({ label, value }) => (
+                            <div key={label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '14px 16px' }}>
+                              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>{label}</div>
+                              <div style={{ fontSize: 18, fontWeight: 800, color: '#fff' }}>{value}</div>
+                            </div>
+                          ))}
+                        </div>
+                        <div style={{ background: 'linear-gradient(135deg, rgba(255,94,26,0.1), rgba(255,94,26,0.05))', border: '1px solid rgba(255,94,26,0.2)', borderRadius: 16, padding: 20 }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ff5e1a', marginBottom: 8 }}>Max Ethical Range</div>
+                          <div style={{ fontSize: 48, fontWeight: 900, color: '#fff', letterSpacing: -2, lineHeight: 1 }}>
+                            {activeBow.arrowSpeed && activeBow.arrowWeight ? (
+                              (() => {
+                                const ke = (activeBow.arrowWeight * activeBow.arrowSpeed * activeBow.arrowSpeed) / 450240;
+                                const maxYards = Math.round(Math.min(60, (ke / 40) * 30));
+                                return `${maxYards}yd`;
+                              })()
+                            ) : '—'}
+                          </div>
+                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 6 }}>estimated for whitetail deer (40 ft-lbs min)</div>
+                        </div>
+                        {[(activeBow as any).pin1, (activeBow as any).pin2, (activeBow as any).pin3, (activeBow as any).pin4, (activeBow as any).pin5, (activeBow as any).pin6].some(p => p) && (
+                          <>
+                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)' }}>Fixed Pins</div>
+                            <div className="glass-card">
+                              {[(activeBow as any).pin1, (activeBow as any).pin2, (activeBow as any).pin3, (activeBow as any).pin4, (activeBow as any).pin5, (activeBow as any).pin6]
+                                .map((pin, i) => pin ? (
+                                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 18px', borderTop: i === 0 ? 'none' : '1px solid rgba(255,255,255,0.06)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                      <div style={{ width: 10, height: 10, borderRadius: '50%', background: ['#ff5e1a', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f472b6'][i] }} />
+                                      <span style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>Pin {i + 1}</span>
+                                    </div>
+                                    <span style={{ fontSize: 16, fontWeight: 800, color: '#fff' }}>{pin} yd</span>
+                                  </div>
+                                ) : null)
+                              }
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      /* TARGET BOW — marks/angle tabs */
+                      <>
                       <div className="seg" style={{ marginBottom: 12 }}>
                         <button className={`seg-btn${activeTab === 'marks' ? ' active' : ''}`} onClick={() => setActiveTab('marks')}>Sight Marks</button>
                         <button className={`seg-btn${activeTab === 'angle' ? ' active' : ''}`} onClick={() => setActiveTab('angle')}>Angle Cut</button>
@@ -705,6 +759,8 @@ export default function Home() {
                           </div>
                         </>
                       )}
+                      </>
+                    )}
                     </div>
                   )}
                 </>
