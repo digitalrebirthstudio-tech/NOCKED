@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
-import { saveSession } from '@/lib/db';
+import { saveSession, getBows } from '@/lib/db';
 
 interface BowProfile {
   id: string;
@@ -21,14 +21,16 @@ export default function NewSessionPage() {
   const [targetCount, setTargetCount] = useState(20);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { router.push('/landing'); return; }
-      // Load bows for bow selector from localStorage (mirrors Supabase data)
-      const saved = localStorage.getItem('nocked_bows');
-      if (saved) {
-        const parsed = JSON.parse(saved) as BowProfile[];
-        setBows(parsed);
-        if (parsed.length > 0) setSelectedBowId(parsed[0].id);
+      const data = await getBows(session.user.id).catch(() => []);
+      if (data && data.length > 0) {
+        const mapped = data.map((b: any) => ({
+          id: b.id,
+          name: b.name,
+        }));
+        setBows(mapped);
+        setSelectedBowId(mapped[0].id);
       }
     });
   }, []);
