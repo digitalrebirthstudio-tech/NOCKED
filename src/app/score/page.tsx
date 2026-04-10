@@ -31,6 +31,7 @@ export default function ScorePage() {
 
   const [sessions, setSessions] = useState<Session[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -52,7 +53,8 @@ export default function ScorePage() {
           }));
           setSessions(mapped);
         }
-      }).catch(console.error);
+        setLoading(false);
+      }).catch(() => setLoading(false));
     });
   }, []);
 
@@ -71,6 +73,19 @@ export default function ScorePage() {
     if (type === '3D Shoot') return '#34d399';
     return '#60a5fa';
   };
+
+  if (loading) return (
+    <div style={{ maxWidth: 680, margin: '0 auto', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ height: 48, background: 'rgba(255,255,255,0.04)', borderRadius: 14, animation: 'pulse 1.5s infinite' }} />
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
+        <div style={{ height: 300, background: 'rgba(255,255,255,0.04)', borderRadius: 18, animation: 'pulse 1.5s infinite' }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {[1,2,3].map(i => <div key={i} style={{ height: 88, background: 'rgba(255,255,255,0.04)', borderRadius: 14, animation: 'pulse 1.5s infinite' }} />)}
+        </div>
+      </div>
+      <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }`}</style>
+    </div>
+  );
 
   return (
     <>
