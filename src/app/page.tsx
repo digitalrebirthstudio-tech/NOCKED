@@ -116,14 +116,19 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'marks' | 'angle'>('marks');
 
   useEffect(() => {
+    console.log('Auth check useEffect running');
     try {
       supabase.auth.getSession().then(({ data: { session }, error }) => {
+        console.log('Session result:', session, 'Error:', error);
         if (error || !session) {
+          console.log('No session, redirecting to landing');
           router.push('/landing');
         } else {
+          console.log('Session found, userId:', session.user.id);
           setUserId(session.user.id);
           setAuthChecked(true);
           getBows(session.user.id).then(data => {
+            console.log('Bows from Supabase:', data);
             if (data && data.length > 0) {
               const mapped = data.map((b: any) => ({
                 id: b.id,
@@ -147,7 +152,7 @@ export default function Home() {
               const last = [...mapped].sort((a: BowProfile, b: BowProfile) => b.lastUsed - a.lastUsed)[0];
               setActiveBow(last);
             }
-          }).catch(console.error);
+          }).catch(e => console.error('getBows error:', e));
         }
       }).catch(() => {
         router.push('/landing');
@@ -169,8 +174,15 @@ export default function Home() {
     setBows(updated);
     if (userId) {
       for (const bow of updated) {
-        await saveBow(userId, bow).catch(console.error);
+        try {
+          const result = await saveBow(userId, bow);
+          console.log('Bow saved to Supabase:', result);
+        } catch (error) {
+          console.error('Failed to save bow to Supabase:', error);
+        }
       }
+    } else {
+      console.error('No userId available when trying to save bow');
     }
   };
 
