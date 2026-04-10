@@ -28,13 +28,13 @@ interface Target {
 export default function ScorePage() {
   const router = useRouter();
 
+  const [sessions, setSessions] = useState<Session[]>([]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) router.push('/landing');
     });
   }, []);
-
-  const [sessions, setSessions] = useState<Session[]>([]);
 
   useEffect(() => {
     const saved = localStorage.getItem('nocked_sessions');
