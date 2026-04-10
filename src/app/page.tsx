@@ -294,11 +294,24 @@ export default function Home() {
   const hasModifier = weatherAdj !== 0 || fatigueAdj !== 0;
 
   const filteredMarks = () => {
-    if (!activeBow?.marks) return [];
-    if (gameMode === 'All') return activeBow.marks;
+    if (!activeBow || !activeBow.calibMark1 || !activeBow.calibMark2) return [];
+
+    const allMarks = calculateSightMarks({
+      arrowSpeed: activeBow.arrowSpeed,
+      arrowWeight: activeBow.arrowWeight,
+      peepToPin: activeBow.peepToPin,
+      peepToArrow: activeBow.peepToArrow,
+      calibDist1: activeBow.calibDist1,
+      calibMark1: parseFloat(activeBow.calibMark1),
+      calibDist2: activeBow.calibDist2,
+      calibMark2: parseFloat(activeBow.calibMark2),
+      sightResolution: activeBow.sightResolution,
+    });
+
+    if (gameMode === 'All') return allMarks;
     const allowed = gameMode === 'Field' ? FIELD_DISTANCES :
       gameMode === 'Hunter' ? HUNTER_DISTANCES : ANIMAL_DISTANCES;
-    return activeBow.marks.filter(m => allowed.includes(m.distance));
+    return allMarks.filter(m => allowed.includes(m.distance));
   };
 
   const sortedBows = [...bows].sort((a, b) => b.lastUsed - a.lastUsed);
