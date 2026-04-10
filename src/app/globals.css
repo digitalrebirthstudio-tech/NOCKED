@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
+:root {
+  --bg: #141414;
+  --text: #fff;
+  --card-bg: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.08);
+  --text-muted: rgba(255,255,255,0.4);
+  --text-faint: rgba(255,255,255,0.2);
+  --accent: #ff5e1a;
+}
+
 * {
   box-sizing: border-box;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -8,8 +18,8 @@
 
 body {
   margin: 0;
-  background: #141414;
-  color: #fff;
+  background: var(--bg);
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

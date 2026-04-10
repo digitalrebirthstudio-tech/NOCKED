@@ -39,9 +39,25 @@ export default function ProfilePage() {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     localStorage.setItem('nocked_theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-    document.body.style.background = newTheme === 'light' ? '#f5f5f5' : '#141414';
-    document.body.style.color = newTheme === 'light' ? '#111' : '#fff';
+    if (newTheme === 'light') {
+      document.body.style.background = '#f5f5f5';
+      document.body.style.color = '#111';
+      document.documentElement.style.setProperty('--bg', '#f5f5f5');
+      document.documentElement.style.setProperty('--text', '#111');
+      document.documentElement.style.setProperty('--card-bg', 'rgba(0,0,0,0.04)');
+      document.documentElement.style.setProperty('--card-border', 'rgba(0,0,0,0.08)');
+      document.documentElement.style.setProperty('--text-muted', 'rgba(0,0,0,0.4)');
+      document.documentElement.style.setProperty('--text-faint', 'rgba(0,0,0,0.2)');
+    } else {
+      document.body.style.background = '#141414';
+      document.body.style.color = '#fff';
+      document.documentElement.style.setProperty('--bg', '#141414');
+      document.documentElement.style.setProperty('--text', '#fff');
+      document.documentElement.style.setProperty('--card-bg', 'rgba(255,255,255,0.04)');
+      document.documentElement.style.setProperty('--card-border', 'rgba(255,255,255,0.08)');
+      document.documentElement.style.setProperty('--text-muted', 'rgba(255,255,255,0.4)');
+      document.documentElement.style.setProperty('--text-faint', 'rgba(255,255,255,0.2)');
+    }
   };
 
   useEffect(() => {

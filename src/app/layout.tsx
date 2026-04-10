@@ -42,8 +42,16 @@ export default function RootLayout({
           __html: `
             try {
               const theme = localStorage.getItem('nocked_theme') || 'dark';
-              document.body.style.background = theme === 'light' ? '#f5f5f5' : '#141414';
-              document.body.style.color = theme === 'light' ? '#111' : '#fff';
+              if (theme === 'light') {
+                document.body.style.background = '#f5f5f5';
+                document.body.style.color = '#111';
+                document.documentElement.style.setProperty('--bg', '#f5f5f5');
+                document.documentElement.style.setProperty('--text', '#111');
+                document.documentElement.style.setProperty('--card-bg', 'rgba(0,0,0,0.04)');
+                document.documentElement.style.setProperty('--card-border', 'rgba(0,0,0,0.08)');
+                document.documentElement.style.setProperty('--text-muted', 'rgba(0,0,0,0.4)');
+                document.documentElement.style.setProperty('--text-faint', 'rgba(0,0,0,0.2)');
+              }
             } catch(e) {}
           `
         }} />
