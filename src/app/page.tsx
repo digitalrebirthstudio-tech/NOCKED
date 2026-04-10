@@ -129,14 +129,6 @@ export default function Home() {
     }
   }, []);
 
-  if (!authChecked) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#141414' }}>
-      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Loading...</div>
-    </div>
-  );
-
-  const angleCut = calcAngleCut(angleDist, angleDeg);
-
   // Load bows from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('nocked_bows');
@@ -149,6 +141,14 @@ export default function Home() {
       }
     }
   }, []);
+
+  if (!authChecked) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#141414' }}>
+      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Loading...</div>
+    </div>
+  );
+
+  const angleCut = calcAngleCut(angleDist, angleDeg);
 
   // Save bows to localStorage whenever they change
   const saveBows = (updated: BowProfile[]) => {
