@@ -1,12 +1,18 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function BottomNav() {
   const router = useRouter();
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
 
-  if (pathname === '/landing') return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || pathname === '/landing') return null;
 
   const tabs = [
     { label: 'Sights', icon: 'adjust', route: '/' },

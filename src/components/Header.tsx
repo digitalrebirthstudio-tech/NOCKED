@@ -2,11 +2,18 @@
 
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
   if (pathname === '/landing') return null;
 
   return (
