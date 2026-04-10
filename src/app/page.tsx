@@ -99,13 +99,19 @@ export default function Home() {
   const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
+    try {
+      supabase.auth.getSession().then(({ data: { session }, error }) => {
+        if (error || !session) {
+          router.push('/landing');
+        } else {
+          setAuthChecked(true);
+        }
+      }).catch(() => {
         router.push('/landing');
-      } else {
-        setAuthChecked(true);
-      }
-    });
+      });
+    } catch (e) {
+      router.push('/landing');
+    }
   }, []);
 
   if (!authChecked) return (
