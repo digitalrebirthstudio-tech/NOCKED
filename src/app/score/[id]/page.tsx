@@ -241,6 +241,11 @@ export default function SessionPage() {
           {scored === session.totalTargets && (
             <button className="main-btn" onClick={handleFinish}>View Summary →</button>
           )}
+          {session.completed && (
+            <button className="main-btn" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', boxShadow: 'none' }} onClick={() => router.push(`/score/${session.id}/summary`)}>
+              Back to Summary
+            </button>
+          )}
         </div>
       </div>
     </>

@@ -239,6 +239,20 @@ export default function SummaryPage() {
           <button className="main-btn" onClick={() => router.push('/score/new')}>Start New Session</button>
           <button className="ghost-btn" onClick={() => router.push('/score')}>Back to Sessions</button>
           <button
+            onClick={() => router.push(`/score/${params.id}`)}
+            style={{
+              width: '100%', padding: '13px',
+              background: 'rgba(255,255,255,0.04)',
+              color: 'rgba(255,255,255,0.7)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 14, fontSize: 14, fontWeight: 600,
+              fontFamily: 'Inter, sans-serif', cursor: 'pointer',
+              transition: 'all 0.15s',
+            }}
+          >
+            Edit Targets
+          </button>
+          <button
             onClick={async () => {
               if (!confirm('Delete this session? This cannot be undone.')) return;
               await deleteSession(params.id as string).catch(console.error);
