@@ -17,6 +17,7 @@ interface Session {
   bowName: string;
   bowId: string;
   type: string;
+  yardageType?: 'known' | 'unknown';
   date: number;
   totalScore: number;
   totalTargets: number;
@@ -204,9 +205,19 @@ export default function SessionPage() {
 
               {/* DISTANCE INPUT */}
               <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Distance (yards)</div>
-                <input className="f-input" type="number" placeholder="Enter distance e.g. 35"
-                  value={distanceInput} onChange={e => setDistanceInput(e.target.value)} />
+                {session.yardageType === 'unknown' ? (
+                  <>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Distance (yards) — <span style={{ color: 'rgba(255,255,255,0.2)' }}>optional</span></div>
+                    <input className="f-input" type="number" placeholder="Unknown yardage — enter if known"
+                      value={distanceInput} onChange={e => setDistanceInput(e.target.value)} />
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Distance (yards)</div>
+                    <input className="f-input" type="number" placeholder="Enter distance e.g. 35"
+                      value={distanceInput} onChange={e => setDistanceInput(e.target.value)} />
+                  </>
+                )}
               </div>
 
               {/* SCORE BUTTONS */}

@@ -19,6 +19,7 @@ export default function NewSessionPage() {
   const [selectedBowId, setSelectedBowId] = useState('');
   const [sessionType, setSessionType] = useState<SessionType>('Practice');
   const [targetCount, setTargetCount] = useState(20);
+  const [yardageType, setYardageType] = useState<'known' | 'unknown'>('known');
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -51,6 +52,7 @@ export default function NewSessionPage() {
       bowId: bow?.id || '',
       bowName: bow?.name || 'No Bow',
       type: sessionType,
+      yardageType: yardageType,
       date: Date.now(),
       totalScore: 0,
       totalTargets: targetCount,
@@ -127,6 +129,37 @@ export default function NewSessionPage() {
                       <div style={{ marginLeft: 'auto', width: 20, height: 20, background: '#ff5e1a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'white', fontWeight: 800 }}>✓</div>
                     )}
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* YARDAGE TYPE */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>Yardage Type</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[
+                { type: 'known' as const, emoji: '📏', title: 'Known Yardage', desc: 'You know the exact distance to each target' },
+                { type: 'unknown' as const, emoji: '🎯', title: 'Unknown Yardage', desc: 'Distances are not marked — common in 3D shoots' },
+              ].map(({ type, emoji, title, desc }) => (
+                <div
+                  key={type}
+                  onClick={() => setYardageType(type)}
+                  style={{
+                    background: yardageType === type ? 'rgba(255,94,26,0.08)' : 'rgba(255,255,255,0.04)',
+                    border: `1px solid ${yardageType === type ? '#ff5e1a' : 'rgba(255,255,255,0.08)'}`,
+                    borderRadius: 14, padding: '16px 20px', cursor: 'pointer', transition: 'all 0.15s',
+                    display: 'flex', alignItems: 'center', gap: 14,
+                  }}
+                >
+                  <div style={{ fontSize: 28 }}>{emoji}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', marginBottom: 3 }}>{title}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>{desc}</div>
+                  </div>
+                  {yardageType === type && (
+                    <div style={{ width: 20, height: 20, background: '#ff5e1a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'white', fontWeight: 800, flexShrink: 0 }}>✓</div>
+                  )}
                 </div>
               ))}
             </div>
