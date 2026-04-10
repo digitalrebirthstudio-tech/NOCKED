@@ -28,38 +28,6 @@ export default function ProfilePage() {
   const [bows, setBows] = useState<BowProfile[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('nocked_theme') as 'dark' | 'light') || 'dark';
-    }
-    return 'dark';
-  });
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    localStorage.setItem('nocked_theme', newTheme);
-    if (newTheme === 'light') {
-      document.body.style.background = '#f5f5f5';
-      document.body.style.color = '#111';
-      document.documentElement.style.setProperty('--bg', '#f5f5f5');
-      document.documentElement.style.setProperty('--text', '#111');
-      document.documentElement.style.setProperty('--card-bg', 'rgba(0,0,0,0.04)');
-      document.documentElement.style.setProperty('--card-border', 'rgba(0,0,0,0.08)');
-      document.documentElement.style.setProperty('--text-muted', 'rgba(0,0,0,0.4)');
-      document.documentElement.style.setProperty('--text-faint', 'rgba(0,0,0,0.2)');
-    } else {
-      document.body.style.background = '#141414';
-      document.body.style.color = '#fff';
-      document.documentElement.style.setProperty('--bg', '#141414');
-      document.documentElement.style.setProperty('--text', '#fff');
-      document.documentElement.style.setProperty('--card-bg', 'rgba(255,255,255,0.04)');
-      document.documentElement.style.setProperty('--card-border', 'rgba(255,255,255,0.08)');
-      document.documentElement.style.setProperty('--text-muted', 'rgba(255,255,255,0.4)');
-      document.documentElement.style.setProperty('--text-faint', 'rgba(255,255,255,0.2)');
-    }
-  };
-
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { router.push('/landing'); return; }
@@ -246,23 +214,6 @@ export default function ProfilePage() {
                 <span style={{ fontSize: 18, color: 'rgba(255,255,255,0.2)' }}>›</span>
               </div>
             ))}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderTop: '1px solid rgba(255,255,255,0.06)', cursor: 'pointer' }} onClick={toggleTheme}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontSize: 18 }}>{theme === 'dark' ? '🌙' : '☀️'}</span>
-                <span style={{ fontSize: 14, fontWeight: 500, color: '#fff' }}>{theme === 'dark' ? 'Dark Mode' : 'Light Mode'}</span>
-              </div>
-              <div style={{
-                width: 44, height: 26, borderRadius: 13,
-                background: theme === 'dark' ? '#ff5e1a' : 'rgba(255,255,255,0.2)',
-                position: 'relative', transition: 'background 0.2s', cursor: 'pointer',
-              }}>
-                <div style={{
-                  position: 'absolute', top: 3, left: theme === 'dark' ? 21 : 3,
-                  width: 20, height: 20, borderRadius: '50%', background: '#fff',
-                  transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
-                }} />
-              </div>
-            </div>
           </div>
 
           {/* APP INFO */}
