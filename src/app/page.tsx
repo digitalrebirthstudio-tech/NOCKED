@@ -430,7 +430,13 @@ export default function Home() {
                   {heroBow && (
                     <div>
                       <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>Active Bow</div>
-                      <div className="hero-card" onClick={() => { setActiveBow(heroBow); setActiveTab('marks'); }}>
+                      <div className="hero-card" onClick={() => {
+                        setActiveBow(heroBow);
+                        setActiveTab('marks');
+                        setTimeout(() => {
+                          document.getElementById('marks-section')?.scrollIntoView({ behavior: 'smooth' });
+                        }, 100);
+                      }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                           <div>
                             <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', letterSpacing: -0.5 }}>{heroBow.name}</div>
@@ -490,7 +496,7 @@ export default function Home() {
 
                   {/* MARKS / ANGLE TABS for active bow */}
                   {activeBow?.marks && (
-                    <div style={{ marginTop: 8 }}>
+                    <div id="marks-section" style={{ marginTop: 8 }}>
                       <div className="seg" style={{ marginBottom: 12 }}>
                         <button className={`seg-btn${activeTab === 'marks' ? ' active' : ''}`} onClick={() => setActiveTab('marks')}>Sight Marks</button>
                         <button className={`seg-btn${activeTab === 'angle' ? ' active' : ''}`} onClick={() => setActiveTab('angle')}>Angle Cut</button>
