@@ -501,11 +501,18 @@ export default function Home() {
           {screen === 'dashboard' && (
             <>
               {bows.length === 0 ? (
-                <div className="glass-card" style={{ padding: '60px 24px', textAlign: 'center' }}>
-                  <div style={{ fontSize: 48, marginBottom: 16 }}>🏹</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: '#fff', marginBottom: 8 }}>No bows yet</div>
-                  <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.3)', marginBottom: 24 }}>Add your first bow to get started</div>
-                  <button className="main-btn" style={{ width: 'auto', padding: '12px 32px' }} onClick={handleNewBow}>Add Bow</button>
+                <div className="glass-card" style={{ padding: '48px 24px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 56, marginBottom: 16 }}>🏹</div>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 8 }}>No bows yet</div>
+                  <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginBottom: 8, lineHeight: 1.6, maxWidth: 280, margin: '0 auto 24px' }}>
+                    Add your first bow to start calculating sight marks and tracking your performance.
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
+                    <button className="main-btn" onClick={handleNewBow}>+ Add My First Bow</button>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)', lineHeight: 1.5 }}>
+                      Supports target bows with click sights and hunting bows with fixed pins
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <>
@@ -584,6 +591,11 @@ export default function Home() {
                       /* HUNTING BOW STATS */
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginTop: 8 }}>Bow Stats</div>
+                        {!activeBow.arrowSpeed && !activeBow.arrowWeight && (
+                          <div style={{ textAlign: 'center', padding: '24px 0', color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>
+                            No stats entered yet — tap Edit to add your bow specs
+                          </div>
+                        )}
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                           {[
                             { label: 'Kinetic Energy', value: activeBow.arrowSpeed && activeBow.arrowWeight ? `${((activeBow.arrowWeight * activeBow.arrowSpeed * activeBow.arrowSpeed) / 450240).toFixed(1)} ft-lbs` : '—' },
