@@ -71,6 +71,7 @@ export async function saveSession(userId: string, session: any) {
       misses: session.misses,
       targets: session.targets,
       completed: session.completed,
+      yardage_type: session.yardageType || 'known',
     }, { onConflict: 'id' });
   if (error) throw error;
   return data;
