@@ -6,7 +6,9 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { getBows, saveBow, deleteBow } from '@/lib/db';
 
-const DISTANCES = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100];
+const DISTANCES_YARDS = [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100];
+const DISTANCES_FEET = [20, 25, 30, 35]; // feet distances shown at top
+const DISTANCES = [...DISTANCES_YARDS];
 
 const SIGHT_TYPES = [
   { label: '8 Click / Number — ARC Systeme SX10', resolution: 0.003937 },
@@ -23,7 +25,9 @@ const SIGHT_TYPES = [
   { label: 'Black Gold Comp', resolution: 0.00156 },
 ];
 
-const FIELD_DISTANCES = [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65];
+const FIELD_DISTANCES_FT = [-35, -30, -25, -20]; // negative = feet
+const FIELD_DISTANCES_YD = [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65];
+const FIELD_DISTANCES = FIELD_DISTANCES_YD;
 const HUNTER_DISTANCES = [11, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65];
 const ANIMAL_DISTANCES = [10, 15, 20, 25, 30, 35, 40, 45, 50];
 
@@ -524,6 +528,32 @@ export default function Home() {
                                 </tr>
                               </thead>
                               <tbody>
+                                {/* FEET ROWS */}
+                                {(gameMode === 'Field' || gameMode === 'All') && DISTANCES_FEET.map((ft, i) => {
+                                  const distYards = ft / 3;
+                                  const a = (0.01275 * (activeBow.peepToPin - activeBow.peepToArrow)) /
+                                    (activeBow.arrowSpeed * activeBow.arrowSpeed * activeBow.sightResolution);
+                                  const d1 = activeBow.calibDist1;
+                                  const d2 = activeBow.calibDist2;
+                                  const m1 = parseFloat(activeBow.calibMark1);
+                                  const m2 = parseFloat(activeBow.calibMark2);
+                                  const b = (m2 - m1 - a * (d2 * d2 - d1 * d1)) / (d2 - d1);
+                                  const c = m1 - a * d1 * d1 - b * d1;
+                                  const mark = parseFloat((a * distYards * distYards + b * distYards + c).toFixed(2));
+                                  return (
+                                    <tr key={`ft-${ft}`} className="tbl-row" style={{ borderTop: '1px solid rgba(255,255,255,0.04)', background: 'rgba(255,255,255,0.02)' }}>
+                                      <td style={{ padding: '11px 16px', fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.4)', textAlign: 'left' }}>
+                                        {ft}<small style={{ color: 'rgba(255,255,255,0.2)', fontSize: 10 }}>ft</small>
+                                      </td>
+                                      <td style={{ padding: '11px 16px', fontSize: 14, fontWeight: 600, color: '#fff', textAlign: 'right' }}>{mark}</td>
+                                      <td style={{ padding: '11px 16px', fontSize: 14, fontWeight: 700, color: 'rgba(255,255,255,0.15)', textAlign: 'right' }}>—</td>
+                                      <td style={{ padding: '11px 16px', fontSize: 12, fontWeight: 600, color: '#60a5fa', textAlign: 'right' }}>—</td>
+                                      <td style={{ padding: '11px 16px', textAlign: 'right' }}>
+                                        <button className="edit-btn">EDIT</button>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
                                 {filteredMarks().map(m => {
                                   const isCalib = m.distance === activeBow.calibDist1 || m.distance === activeBow.calibDist2;
                                   return (
