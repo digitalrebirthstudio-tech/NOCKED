@@ -97,6 +97,21 @@ export default function Home() {
   const router = useRouter();
 
   const [authChecked, setAuthChecked] = useState(false);
+  const [screen, setScreen] = useState<Screen>('dashboard');
+  const [bows, setBows] = useState<BowProfile[]>([]);
+  const [activeBow, setActiveBow] = useState<BowProfile | null>(null);
+  const [editingBow, setEditingBow] = useState<Partial<BowProfile>>(defaultBow());
+  const [isNewBow, setIsNewBow] = useState(true);
+  const [bowType, setBowType] = useState<'target' | 'hunting' | null>(null);
+  const [showBowTypeSelect, setShowBowTypeSelect] = useState(false);
+  const [gameMode, setGameMode] = useState<GameMode>('Field');
+  const [unit, setUnit] = useState<'yd' | 'm'>('yd');
+  const [direction, setDirection] = useState<'Up' | 'Down'>('Up');
+  const [weatherAdj, setWeatherAdj] = useState(0);
+  const [fatigueAdj, setFatigueAdj] = useState(0);
+  const [angleDist, setAngleDist] = useState(40);
+  const [angleDeg, setAngleDeg] = useState(18);
+  const [activeTab, setActiveTab] = useState<'marks' | 'angle'>('marks');
 
   useEffect(() => {
     try {
@@ -119,22 +134,6 @@ export default function Home() {
       <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Loading...</div>
     </div>
   );
-
-  const [screen, setScreen] = useState<Screen>('dashboard');
-  const [bows, setBows] = useState<BowProfile[]>([]);
-  const [activeBow, setActiveBow] = useState<BowProfile | null>(null);
-  const [editingBow, setEditingBow] = useState<Partial<BowProfile>>(defaultBow());
-  const [isNewBow, setIsNewBow] = useState(true);
-  const [bowType, setBowType] = useState<'target' | 'hunting' | null>(null);
-  const [showBowTypeSelect, setShowBowTypeSelect] = useState(false);
-  const [gameMode, setGameMode] = useState<GameMode>('Field');
-  const [unit, setUnit] = useState<'yd' | 'm'>('yd');
-  const [direction, setDirection] = useState<'Up' | 'Down'>('Up');
-  const [weatherAdj, setWeatherAdj] = useState(0);
-  const [fatigueAdj, setFatigueAdj] = useState(0);
-  const [angleDist, setAngleDist] = useState(40);
-  const [angleDeg, setAngleDeg] = useState(18);
-  const [activeTab, setActiveTab] = useState<'marks' | 'angle'>('marks');
 
   const angleCut = calcAngleCut(angleDist, angleDeg);
 
