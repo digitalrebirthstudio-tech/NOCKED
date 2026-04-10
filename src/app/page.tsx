@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
+import { getBows, saveBow, deleteBow } from '@/lib/db';
 
 const DISTANCES = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100];
 
@@ -97,6 +98,7 @@ export default function Home() {
   const router = useRouter();
 
   const [authChecked, setAuthChecked] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const [screen, setScreen] = useState<Screen>('dashboard');
   const [bows, setBows] = useState<BowProfile[]>([]);
   const [activeBow, setActiveBow] = useState<BowProfile | null>(null);
@@ -119,26 +121,39 @@ export default function Home() {
         if (error || !session) {
           router.push('/landing');
         } else {
+          setUserId(session.user.id);
           setAuthChecked(true);
+          getBows(session.user.id).then(data => {
+            if (data && data.length > 0) {
+              const mapped = data.map((b: any) => ({
+                id: b.id,
+                name: b.name,
+                arrowSpeed: b.arrow_speed,
+                arrowWeight: b.arrow_weight,
+                peepToPin: b.peep_to_pin,
+                peepToArrow: b.peep_to_arrow,
+                sightTypeLabel: b.sight_type_label,
+                sightResolution: b.sight_resolution,
+                arrowDiameter: b.arrow_diameter,
+                calibDist1: b.calib_dist1,
+                calibMark1: String(b.calib_mark1),
+                calibDist2: b.calib_dist2,
+                calibMark2: String(b.calib_mark2),
+                marks: b.marks || [],
+                lastUsed: b.last_used,
+                bowType: b.bow_type || 'target',
+              }));
+              setBows(mapped);
+              const last = [...mapped].sort((a: BowProfile, b: BowProfile) => b.lastUsed - a.lastUsed)[0];
+              setActiveBow(last);
+            }
+          }).catch(console.error);
         }
       }).catch(() => {
         router.push('/landing');
       });
     } catch (e) {
       router.push('/landing');
-    }
-  }, []);
-
-  // Load bows from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('nocked_bows');
-    if (saved) {
-      const parsed = JSON.parse(saved) as BowProfile[];
-      setBows(parsed);
-      if (parsed.length > 0) {
-        const last = [...parsed].sort((a, b) => b.lastUsed - a.lastUsed)[0];
-        setActiveBow(last);
-      }
     }
   }, []);
 
@@ -150,10 +165,13 @@ export default function Home() {
 
   const angleCut = calcAngleCut(angleDist, angleDeg);
 
-  // Save bows to localStorage whenever they change
-  const saveBows = (updated: BowProfile[]) => {
+  const saveBows = async (updated: BowProfile[]) => {
     setBows(updated);
-    localStorage.setItem('nocked_bows', JSON.stringify(updated));
+    if (userId) {
+      for (const bow of updated) {
+        await saveBow(userId, bow).catch(console.error);
+      }
+    }
   };
 
   const handleNewBow = () => {
@@ -202,12 +220,11 @@ export default function Home() {
     setScreen('setup');
   };
 
-  const handleDeleteBow = (id: string) => {
+  const handleDeleteBow = async (id: string) => {
     const updated = bows.filter(b => b.id !== id);
-    saveBows(updated);
-    if (activeBow?.id === id) {
-      setActiveBow(updated.length > 0 ? updated[0] : null);
-    }
+    setBows(updated);
+    if (activeBow?.id === id) setActiveBow(updated.length > 0 ? updated[0] : null);
+    await deleteBow(id).catch(console.error);
   };
 
   const handleCalculate = () => {

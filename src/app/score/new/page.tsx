@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { supabase } from '@/lib/supabase';
+import { saveSession } from '@/lib/db';
 
 interface BowProfile {
   id: string;
@@ -19,12 +21,16 @@ export default function NewSessionPage() {
   const [targetCount, setTargetCount] = useState(20);
 
   useEffect(() => {
-    const saved = localStorage.getItem('nocked_bows');
-    if (saved) {
-      const parsed = JSON.parse(saved) as BowProfile[];
-      setBows(parsed);
-      if (parsed.length > 0) setSelectedBowId(parsed[0].id);
-    }
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) { router.push('/landing'); return; }
+      // Load bows for bow selector from localStorage (mirrors Supabase data)
+      const saved = localStorage.getItem('nocked_bows');
+      if (saved) {
+        const parsed = JSON.parse(saved) as BowProfile[];
+        setBows(parsed);
+        if (parsed.length > 0) setSelectedBowId(parsed[0].id);
+      }
+    });
   }, []);
 
   const SESSION_TYPES: { type: SessionType; emoji: string; desc: string; defaultTargets: number }[] = [
@@ -33,16 +39,11 @@ export default function NewSessionPage() {
     { type: 'ASA', emoji: '🏆', desc: 'ASA style — 20 targets, manual distances', defaultTargets: 20 },
   ];
 
-  const handleStart = () => {
+  const handleStart = async () => {
     const bow = bows.find(b => b.id === selectedBowId);
-
     const targets = Array.from({ length: targetCount }, (_, i) => ({
-      number: i + 1,
-      distance: null,
-      score: null,
-      notes: '',
+      number: i + 1, distance: null, score: null, notes: '',
     }));
-
     const session = {
       id: crypto.randomUUID(),
       bowId: bow?.id || '',
@@ -55,11 +56,10 @@ export default function NewSessionPage() {
       targets,
       completed: false,
     };
-
-    const existing = localStorage.getItem('nocked_sessions');
-    const sessions = existing ? JSON.parse(existing) : [];
-    sessions.push(session);
-    localStorage.setItem('nocked_sessions', JSON.stringify(sessions));
+    const { data: { session: authSession } } = await supabase.auth.getSession();
+    if (authSession) {
+      await saveSession(authSession.user.id, session).catch(console.error);
+    }
     router.push(`/score/${session.id}`);
   };
 

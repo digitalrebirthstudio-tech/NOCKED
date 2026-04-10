@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
+import { supabase } from '@/lib/supabase';
+import { deleteSession } from '@/lib/db';
 
 interface Target {
   number: number;
@@ -36,22 +38,26 @@ export default function SummaryPage() {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem('nocked_sessions');
-    if (saved) {
-      const sessions: Session[] = JSON.parse(saved);
-      const found = sessions.find(s => s.id === params.id);
-      if (found) {
-        // Mark as completed
-        if (!found.completed) {
-          const updated = { ...found, completed: true };
-          const newSessions = sessions.map(s => s.id === updated.id ? updated : s);
-          localStorage.setItem('nocked_sessions', JSON.stringify(newSessions));
-          setSession(updated);
-        } else {
-          setSession(found);
+    supabase.auth.getSession().then(async ({ data: { session: authSession } }) => {
+      if (!authSession) { router.push('/landing'); return; }
+      const { data } = await supabase.from('sessions').select('*').eq('id', params.id).single();
+      if (data) {
+        if (!data.completed) {
+          await supabase.from('sessions').update({ completed: true }).eq('id', data.id);
         }
+        setSession({
+          id: data.id,
+          bowName: data.bow_name,
+          type: data.type,
+          date: data.date,
+          totalScore: data.total_score,
+          totalTargets: data.total_targets,
+          misses: data.misses,
+          targets: data.targets,
+          completed: true,
+        });
       }
-    }
+    });
   }, [params.id]);
 
   if (!session) return <div style={{ background: '#141414', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>Loading...</div>;
@@ -233,12 +239,9 @@ export default function SummaryPage() {
           <button className="main-btn" onClick={() => router.push('/score/new')}>Start New Session</button>
           <button className="ghost-btn" onClick={() => router.push('/score')}>Back to Sessions</button>
           <button
-            onClick={() => {
+            onClick={async () => {
               if (!confirm('Delete this session? This cannot be undone.')) return;
-              const saved = localStorage.getItem('nocked_sessions');
-              const sessions = saved ? JSON.parse(saved) : [];
-              const updated = sessions.filter((s: any) => s.id !== params.id);
-              localStorage.setItem('nocked_sessions', JSON.stringify(updated));
+              await deleteSession(params.id as string).catch(console.error);
               router.push('/score');
             }}
             style={{

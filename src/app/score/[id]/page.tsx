@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import { saveSession } from '@/lib/db';
 
 interface Target {
   number: number;
@@ -39,27 +41,34 @@ export default function SessionPage() {
   const [distanceInput, setDistanceInput] = useState('');
 
   useEffect(() => {
-    const saved = localStorage.getItem('nocked_sessions');
-    if (saved) {
-      const sessions: Session[] = JSON.parse(saved);
-      const found = sessions.find(s => s.id === params.id);
-      if (found) {
-        setSession(found);
-        // Find first incomplete target
-        const firstIncomplete = found.targets.findIndex(t => t.score === null);
+    supabase.auth.getSession().then(async ({ data: { session: authSession } }) => {
+      if (!authSession) { router.push('/landing'); return; }
+      const { data } = await supabase.from('sessions').select('*').eq('id', params.id).single();
+      if (data) {
+        const mapped = {
+          id: data.id,
+          bowName: data.bow_name,
+          bowId: data.bow_id,
+          type: data.type,
+          date: data.date,
+          totalScore: data.total_score,
+          totalTargets: data.total_targets,
+          misses: data.misses,
+          targets: data.targets,
+          completed: data.completed,
+        };
+        setSession(mapped);
+        const firstIncomplete = mapped.targets.findIndex((t: any) => t.score === null);
         setCurrentTarget(firstIncomplete >= 0 ? firstIncomplete : 0);
-        if (found.targets[firstIncomplete >= 0 ? firstIncomplete : 0]?.distance) {
-          setDistanceInput(String(found.targets[firstIncomplete >= 0 ? firstIncomplete : 0].distance));
-        }
       }
-    }
+    });
   }, [params.id]);
 
-  const saveSession = (updated: Session) => {
-    const saved = localStorage.getItem('nocked_sessions');
-    const sessions: Session[] = saved ? JSON.parse(saved) : [];
-    const newSessions = sessions.map(s => s.id === updated.id ? updated : s);
-    localStorage.setItem('nocked_sessions', JSON.stringify(newSessions));
+  const saveSessionData = async (updated: Session) => {
+    const { data: { session: authSession } } = await supabase.auth.getSession();
+    if (authSession) {
+      await saveSession(authSession.user.id, updated).catch(console.error);
+    }
     setSession(updated);
   };
 
@@ -72,7 +81,7 @@ export default function SessionPage() {
     const totalScore = updatedTargets.reduce((sum, t) => sum + (t.score ?? 0), 0);
     const misses = updatedTargets.filter(t => t.score === 0).length;
     const updated = { ...session, targets: updatedTargets, totalScore, misses };
-    saveSession(updated);
+    saveSessionData(updated);
 
     // Move to next target or finish
     if (currentTarget < session.totalTargets - 1) {
@@ -84,7 +93,7 @@ export default function SessionPage() {
   const handleFinish = () => {
     if (!session) return;
     const updated = { ...session, completed: true };
-    saveSession(updated);
+    saveSessionData(updated);
     router.push(`/score/${session.id}/summary`);
   };
 

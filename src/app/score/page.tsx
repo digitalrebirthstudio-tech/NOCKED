@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
+import { getSessions, saveSession, deleteSession as deleteSessionDB } from '@/lib/db';
 
 interface Session {
   id: string;
@@ -29,23 +30,37 @@ export default function ScorePage() {
   const router = useRouter();
 
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) router.push('/landing');
+      if (!session) { router.push('/landing'); return; }
+      setUserId(session.user.id);
+      getSessions(session.user.id).then(data => {
+        if (data) {
+          const mapped = data.map((s: any) => ({
+            id: s.id,
+            bowId: s.bow_id,
+            bowName: s.bow_name,
+            type: s.type,
+            date: s.date,
+            totalScore: s.total_score,
+            totalTargets: s.total_targets,
+            misses: s.misses,
+            targets: s.targets,
+            completed: s.completed,
+          }));
+          setSessions(mapped);
+        }
+      }).catch(console.error);
     });
   }, []);
 
-  useEffect(() => {
-    const saved = localStorage.getItem('nocked_sessions');
-    if (saved) setSessions(JSON.parse(saved));
-  }, []);
-
-  const deleteSession = (id: string) => {
+  const handleDeleteSession = async (id: string) => {
     if (!confirm('Delete this session? This cannot be undone.')) return;
     const updated = sessions.filter(s => s.id !== id);
     setSessions(updated);
-    localStorage.setItem('nocked_sessions', JSON.stringify(updated));
+    await deleteSessionDB(id).catch(console.error);
   };
 
   const completedSessions = sessions.filter(s => s.completed).sort((a, b) => b.date - a.date);
