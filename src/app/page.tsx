@@ -6,9 +6,9 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { getBows, saveBow, deleteBow } from '@/lib/db';
 
-const DISTANCES_YARDS = [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100];
 const DISTANCES_FEET = [20, 25, 30, 35]; // feet distances shown at top
-const DISTANCES = [...DISTANCES_YARDS];
+const DISTANCES = Array.from({ length: 46 }, (_, i) => 10 + i * 2);
+// generates [10, 12, 14, 16, 18, 20, 22, ... 98, 100]
 
 const SIGHT_TYPES = [
   { label: '8 Click / Number — ARC Systeme SX10', resolution: 0.003937 },
@@ -26,10 +26,10 @@ const SIGHT_TYPES = [
 ];
 
 const FIELD_DISTANCES_FT = [-35, -30, -25, -20]; // negative = feet
-const FIELD_DISTANCES_YD = [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65];
+const FIELD_DISTANCES_YD = [15, 20, 22, 24, 25, 26, 28, 30, 32, 34, 35, 36, 38, 40, 42, 44, 45, 46, 48, 50, 52, 54, 55, 56, 58, 60, 62, 64, 65];
 const FIELD_DISTANCES = FIELD_DISTANCES_YD;
-const HUNTER_DISTANCES = [11, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65];
-const ANIMAL_DISTANCES = [10, 15, 20, 25, 30, 35, 40, 45, 50];
+const HUNTER_DISTANCES = [10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 26, 28, 30, 32, 34, 35, 36, 38, 40, 42, 44, 45, 46, 48, 50, 52, 54, 55, 56, 58, 60, 62, 64, 65];
+const ANIMAL_DISTANCES = [10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 26, 28, 30, 32, 34, 35, 36, 38, 40, 42, 44, 45, 46, 48, 50];
 
 type GameMode = 'Field' | 'Hunter' | 'Animal' | 'All';
 type Screen = 'dashboard' | 'setup' | 'marks' | 'angle';
