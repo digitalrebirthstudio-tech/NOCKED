@@ -96,11 +96,23 @@ const defaultBow = (): Omit<BowProfile, 'id' | 'lastUsed'> => ({
 export default function Home() {
   const router = useRouter();
 
+  const [authChecked, setAuthChecked] = useState(false);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) router.push('/landing');
+      if (!session) {
+        router.push('/landing');
+      } else {
+        setAuthChecked(true);
+      }
     });
   }, []);
+
+  if (!authChecked) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#141414' }}>
+      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Loading...</div>
+    </div>
+  );
 
   const [screen, setScreen] = useState<Screen>('dashboard');
   const [bows, setBows] = useState<BowProfile[]>([]);
