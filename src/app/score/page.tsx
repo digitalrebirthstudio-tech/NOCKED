@@ -11,6 +11,8 @@ interface Session {
   bowName: string;
   bowId: string;
   type: 'Practice' | '3D Shoot' | 'ASA';
+  sessionName: string;
+  targetType: string;
   date: number;
   totalScore: number;
   totalTargets: number;
@@ -18,6 +20,11 @@ interface Session {
   targets: Target[];
   completed: boolean;
 }
+
+const MAX_PER_TARGET: Record<string, number> = {
+  'ASA 3D': 12, 'IBO 3D': 11, 'NFAA Field': 5, 'NFAA Indoor': 5, 'Vegas 300': 10,
+};
+const getMaxPerTarget = (t: string) => MAX_PER_TARGET[t] || 12;
 
 interface Target {
   number: number;
@@ -44,6 +51,8 @@ export default function ScorePage() {
             bowId: s.bow_id,
             bowName: s.bow_name,
             type: s.type,
+            sessionName: s.session_name || '',
+            targetType: s.target_type || 'ASA 3D',
             date: s.date,
             totalScore: s.total_score,
             totalTargets: s.total_targets,
@@ -175,10 +184,11 @@ export default function ScorePage() {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                               <div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                                  <span style={{ fontSize: 11, fontWeight: 700, color: typeColor(s.type), background: `${typeColor(s.type)}18`, padding: '2px 8px', borderRadius: 6 }}>{s.type}</span>
+                                  <span style={{ fontSize: 11, fontWeight: 700, color: typeColor(s.type), background: `${typeColor(s.type)}18`, padding: '2px 8px', borderRadius: 6 }}>{s.targetType}</span>
                                   <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{new Date(s.date).toLocaleDateString()}</span>
                                 </div>
-                                <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{s.bowName}</div>
+                                <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{s.sessionName || s.bowName}</div>
+                                {s.sessionName && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 1 }}>{s.bowName}</div>}
                                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>
                                   {s.targets.filter((t: any) => t.score !== null).length} / {s.totalTargets} targets · Score: {s.totalScore}
                                 </div>
@@ -195,24 +205,29 @@ export default function ScorePage() {
                     <div>
                       <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>Past Sessions</div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {completedSessions.map(s => (
+                        {completedSessions.map(s => {
+                          const maxScore = s.totalTargets * getMaxPerTarget(s.targetType);
+                          const pct = maxScore > 0 ? Math.round((s.totalScore / maxScore) * 100) : 0;
+                          return (
                           <div key={s.id} className="session-card" onClick={() => router.push(`/score/${s.id}/summary`)}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                                  <span style={{ fontSize: 11, fontWeight: 700, color: typeColor(s.type), background: `${typeColor(s.type)}18`, padding: '2px 8px', borderRadius: 6 }}>{s.type}</span>
+                                  <span style={{ fontSize: 11, fontWeight: 700, color: typeColor(s.type), background: `${typeColor(s.type)}18`, padding: '2px 8px', borderRadius: 6 }}>{s.targetType}</span>
                                   <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{new Date(s.date).toLocaleDateString()}</span>
                                 </div>
-                                <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{s.bowName}</div>
+                                <div style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{s.sessionName || s.bowName}</div>
+                                {s.sessionName && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 1 }}>{s.bowName}</div>}
                                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{s.totalTargets} targets · {s.misses} misses</div>
                               </div>
                               <div style={{ textAlign: 'right' }}>
                                 <div style={{ fontSize: 28, fontWeight: 800, color: '#ff5e1a', letterSpacing: -1 }}>{s.totalScore}</div>
-                                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>/ {s.totalTargets * 12}</div>
+                                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{pct}% of {maxScore}</div>
                               </div>
                             </div>
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}

@@ -74,6 +74,8 @@ export async function saveSession(userId: string, session: any) {
       completed: session.completed,
       yardage_type: session.yardageType || 'known',
       weather_conditions: session.weather || null,
+      session_name: session.sessionName || '',
+      target_type: session.targetType || 'ASA 3D',
     }, { onConflict: 'id' });
   if (error) throw error;
   return data;

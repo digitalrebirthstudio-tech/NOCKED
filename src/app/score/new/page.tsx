@@ -20,6 +20,8 @@ export default function NewSessionPage() {
   const [sessionType, setSessionType] = useState<SessionType>('Practice');
   const [targetCount, setTargetCount] = useState(20);
   const [yardageType, setYardageType] = useState<'known' | 'unknown'>('known');
+  const [sessionName, setSessionName] = useState('');
+  const [targetType, setTargetType] = useState('ASA 3D');
   const [weather, setWeather] = useState({
     windSpeed: '',
     windDirection: '',
@@ -89,6 +91,8 @@ export default function NewSessionPage() {
       bowId: bow?.id || '',
       bowName: bow?.name || 'No Bow',
       type: sessionType,
+      sessionName: sessionName.trim(),
+      targetType,
       yardageType: yardageType,
       date: Date.now(),
       totalScore: 0,
@@ -149,6 +153,39 @@ export default function NewSessionPage() {
 
 
         <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+          {/* SESSION NAME */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>Session Name <span style={{ color: 'rgba(255,255,255,0.2)', fontWeight: 500, textTransform: 'none', letterSpacing: 0 }}>(optional)</span></div>
+            <input className="f-input" type="text" placeholder="e.g. Morning Practice, State Championship..."
+              value={sessionName} onChange={e => setSessionName(e.target.value)} />
+          </div>
+
+          {/* TARGET TYPE */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>Scoring System</div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {(['ASA 3D', 'IBO 3D', 'NFAA Field', 'NFAA Indoor', 'Vegas 300', 'Custom'] as const).map(t => (
+                <button key={t} onClick={() => setTargetType(t)}
+                  style={{
+                    padding: '8px 14px', borderRadius: 10, border: '1px solid',
+                    borderColor: targetType === t ? '#ff5e1a' : 'rgba(255,255,255,0.08)',
+                    background: targetType === t ? 'rgba(255,94,26,0.15)' : 'rgba(255,255,255,0.04)',
+                    color: targetType === t ? '#ff5e1a' : 'rgba(255,255,255,0.5)',
+                    fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                    fontFamily: 'Inter, sans-serif', transition: 'all 0.15s',
+                  }}>{t}</button>
+              ))}
+            </div>
+            <div style={{ marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>
+              {targetType === 'ASA 3D' && '12 / 10 / 8 / 5 / 0'}
+              {targetType === 'IBO 3D' && '11 / 10 / 8 / 5 / 0'}
+              {targetType === 'NFAA Field' && '5 / 4 / 3 / 0'}
+              {targetType === 'NFAA Indoor' && '5 / 4 / 3 / 2 / 1'}
+              {targetType === 'Vegas 300' && '10 / 9 / 8 / 7 / 0'}
+              {targetType === 'Custom' && 'Uses ASA 3D values — tap to override per target'}
+            </div>
+          </div>
 
           {/* SESSION TYPE */}
           <div>
