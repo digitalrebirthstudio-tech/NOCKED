@@ -54,6 +54,11 @@ const SCORE_SYSTEMS: Record<string, { values: number[]; labels: Record<number, s
     labels: { 10: 'X/10', 9: '9', 8: '8', 7: '7', 0: 'Miss' },
     colors: { 10: '#ff5e1a', 9: '#fbbf24', 8: '#34d399', 7: '#60a5fa', 0: '#ff3b30' },
   },
+  'AON': {
+    values: [12, 5],
+    labels: { 12: 'Kill', 5: 'Hit' },
+    colors: { 12: '#ff5e1a', 5: '#ff3b30' },
+  },
 };
 const DEFAULT_SYSTEM = SCORE_SYSTEMS['ASA 3D'];
 

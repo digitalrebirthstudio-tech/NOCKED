@@ -165,7 +165,7 @@ export default function NewSessionPage() {
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>Scoring System</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {(['ASA 3D', 'IBO 3D', 'NFAA Field', 'NFAA Indoor', 'Vegas 300', 'Custom'] as const).map(t => (
+              {(['ASA 3D', 'IBO 3D', 'NFAA Field', 'NFAA Indoor', 'Vegas 300', 'AON'] as const).map(t => (
                 <button key={t} onClick={() => setTargetType(t)}
                   style={{
                     padding: '8px 14px', borderRadius: 10, border: '1px solid',
@@ -183,7 +183,7 @@ export default function NewSessionPage() {
               {targetType === 'NFAA Field' && '5 / 4 / 3 / 0'}
               {targetType === 'NFAA Indoor' && '5 / 4 / 3 / 2 / 1'}
               {targetType === 'Vegas 300' && '10 / 9 / 8 / 7 / 0'}
-              {targetType === 'Custom' && 'Uses ASA 3D values — tap to override per target'}
+              {targetType === 'AON' && '12 / 5 only'}
             </div>
           </div>
 

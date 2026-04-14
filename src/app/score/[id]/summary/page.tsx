@@ -36,7 +36,7 @@ const SCORE_LABELS: Record<number, string> = {
   5: 'Hit', 4: 'Inner', 3: 'Outer', 2: '2', 1: 'Edge', 0: 'Miss',
 };
 const MAX_PER_TARGET: Record<string, number> = {
-  'ASA 3D': 12, 'IBO 3D': 11, 'NFAA Field': 5, 'NFAA Indoor': 5, 'Vegas 300': 10,
+  'ASA 3D': 12, 'IBO 3D': 11, 'NFAA Field': 5, 'NFAA Indoor': 5, 'Vegas 300': 10, 'AON': 12,
 };
 
 export default function SummaryPage() {

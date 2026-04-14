@@ -22,7 +22,7 @@ interface Session {
 }
 
 const MAX_PER_TARGET: Record<string, number> = {
-  'ASA 3D': 12, 'IBO 3D': 11, 'NFAA Field': 5, 'NFAA Indoor': 5, 'Vegas 300': 10,
+  'ASA 3D': 12, 'IBO 3D': 11, 'NFAA Field': 5, 'NFAA Indoor': 5, 'Vegas 300': 10, 'AON': 12,
 };
 const getMaxPerTarget = (t: string) => MAX_PER_TARGET[t] || 12;
 
