@@ -67,7 +67,8 @@ export default function SessionPage() {
   const params = useParams();
   const [session, setSession] = useState<Session | null>(null);
   const [currentTarget, setCurrentTarget] = useState(0);
-  const [distanceInput, setDistanceInput] = useState('');
+  const [localDistance, setLocalDistance] = useState('');
+  const [localNotes, setLocalNotes] = useState('');
   const [flashing, setFlashing] = useState(false);
   const touchStartX = useRef(0);
 
@@ -93,10 +94,20 @@ export default function SessionPage() {
         };
         setSession(mapped);
         const firstIncomplete = mapped.targets.findIndex((t: any) => t.score === null);
-        setCurrentTarget(firstIncomplete >= 0 ? firstIncomplete : 0);
+        const startIdx = firstIncomplete >= 0 ? firstIncomplete : 0;
+        setCurrentTarget(startIdx);
+        const startTarget = mapped.targets[startIdx];
+        setLocalDistance(startTarget?.distance ? String(startTarget.distance) : '');
+        setLocalNotes(startTarget?.notes || '');
       }
     });
   }, [params.id]);
+
+  useEffect(() => {
+    if (!session) return;
+    setLocalDistance(session.targets[currentTarget]?.distance ? String(session.targets[currentTarget].distance) : '');
+    setLocalNotes(session.targets[currentTarget]?.notes || '');
+  }, [currentTarget]);
 
   const saveSessionData = async (updated: Session) => {
     const { data: { session: authSession } } = await supabase.auth.getSession();
@@ -108,7 +119,7 @@ export default function SessionPage() {
 
   const handleScore = (score: number) => {
     if (!session || flashing) return;
-    const dist = parseFloat(distanceInput) || null;
+    const dist = parseFloat(localDistance) || null;
     const updatedTargets = session.targets.map((t, i) =>
       i === currentTarget ? { ...t, score, distance: dist } : t
     );
@@ -122,7 +133,6 @@ export default function SessionPage() {
       setFlashing(false);
       if (currentTarget < session.totalTargets - 1) {
         setCurrentTarget(prev => prev + 1);
-        setDistanceInput('');
       }
     }, 500);
   };
@@ -136,7 +146,6 @@ export default function SessionPage() {
   const goToTarget = (idx: number) => {
     if (!session) return;
     setCurrentTarget(idx);
-    setDistanceInput(session.targets[idx].distance ? String(session.targets[idx].distance) : '');
   };
 
   if (!session) return (
@@ -282,15 +291,15 @@ export default function SessionPage() {
             </div>
             <input className="f-input" type="number"
               placeholder={session.yardageType === 'unknown' ? 'Unknown yardage — enter if known' : 'Enter distance e.g. 35'}
-              value={distanceInput} onChange={e => setDistanceInput(e.target.value)} />
+              value={localDistance} onChange={e => setLocalDistance(e.target.value)} />
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
               {[10, 15, 20, 25, 30, 35, 40, 45, 50].map(d => (
-                <button key={d} onClick={() => setDistanceInput(String(d))}
+                <button key={d} onClick={() => setLocalDistance(String(d))}
                   style={{
                     padding: '4px 10px', borderRadius: 100,
-                    background: distanceInput === String(d) ? 'rgba(255,94,26,0.15)' : 'rgba(255,255,255,0.04)',
-                    border: `1px solid ${distanceInput === String(d) ? '#ff5e1a' : 'rgba(255,255,255,0.08)'}`,
-                    color: distanceInput === String(d) ? '#ff5e1a' : 'rgba(255,255,255,0.4)',
+                    background: localDistance === String(d) ? 'rgba(255,94,26,0.15)' : 'rgba(255,255,255,0.04)',
+                    border: `1px solid ${localDistance === String(d) ? '#ff5e1a' : 'rgba(255,255,255,0.08)'}`,
+                    color: localDistance === String(d) ? '#ff5e1a' : 'rgba(255,255,255,0.4)',
                     fontSize: 12, fontWeight: 600, cursor: 'pointer',
                     fontFamily: 'Inter, sans-serif', transition: 'all 0.12s',
                   }}>{d}</button>
@@ -321,11 +330,13 @@ export default function SessionPage() {
             <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', marginBottom: 6 }}>Notes (optional)</div>
             <textarea
               placeholder="e.g. wind from left, misjudged distance..."
-              value={target.notes || ''}
-              onChange={e => {
+              value={localNotes}
+              onChange={e => setLocalNotes(e.target.value)}
+              onBlur={e => {
+                e.target.style.borderColor = 'rgba(255,255,255,0.08)';
                 if (!session) return;
                 const updatedTargets = session.targets.map((t, i) =>
-                  i === currentTarget ? { ...t, notes: e.target.value } : t
+                  i === currentTarget ? { ...t, notes: localNotes } : t
                 );
                 saveSessionData({ ...session, targets: updatedTargets });
               }}
@@ -337,7 +348,6 @@ export default function SessionPage() {
                 outline: 'none', resize: 'none', height: 72, transition: 'border-color 0.15s',
               }}
               onFocus={e => e.target.style.borderColor = '#ff5e1a'}
-              onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
             />
           </div>
 

@@ -21,6 +21,7 @@ export default function NewSessionPage() {
   const [targetCount, setTargetCount] = useState(20);
   const [yardageType, setYardageType] = useState<'known' | 'unknown'>('known');
   const [sessionName, setSessionName] = useState('');
+  const [localSessionName, setLocalSessionName] = useState('');
   const [targetType, setTargetType] = useState('ASA 3D');
   const [weather, setWeather] = useState({
     windSpeed: '',
@@ -91,7 +92,7 @@ export default function NewSessionPage() {
       bowId: bow?.id || '',
       bowName: bow?.name || 'No Bow',
       type: sessionType,
-      sessionName: sessionName.trim(),
+      sessionName: localSessionName.trim() || sessionName,
       targetType,
       yardageType: yardageType,
       date: Date.now(),
@@ -158,7 +159,9 @@ export default function NewSessionPage() {
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10 }}>Session Name <span style={{ color: 'rgba(255,255,255,0.2)', fontWeight: 500, textTransform: 'none', letterSpacing: 0 }}>(optional)</span></div>
             <input className="f-input" type="text" placeholder="e.g. Morning Practice, State Championship..."
-              value={sessionName} onChange={e => setSessionName(e.target.value)} />
+              value={localSessionName}
+              onChange={e => setLocalSessionName(e.target.value)}
+              onBlur={() => setSessionName(localSessionName.trim())} />
           </div>
 
           {/* TARGET TYPE */}
