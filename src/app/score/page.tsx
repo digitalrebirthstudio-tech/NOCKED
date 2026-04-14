@@ -86,12 +86,10 @@ export default function ScorePage() {
   if (loading) return (
     <div style={{ maxWidth: 680, margin: '0 auto', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div style={{ height: 48, background: 'rgba(255,255,255,0.04)', borderRadius: 14, animation: 'pulse 1.5s infinite' }} />
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
-        <div style={{ height: 300, background: 'rgba(255,255,255,0.04)', borderRadius: 18, animation: 'pulse 1.5s infinite' }} />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {[1,2,3].map(i => <div key={i} style={{ height: 88, background: 'rgba(255,255,255,0.04)', borderRadius: 14, animation: 'pulse 1.5s infinite' }} />)}
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+        {[1,2,3].map(i => <div key={i} style={{ height: 72, background: 'rgba(255,255,255,0.04)', borderRadius: 14, animation: 'pulse 1.5s infinite' }} />)}
       </div>
+      <div style={{ height: 300, background: 'rgba(255,255,255,0.04)', borderRadius: 18, animation: 'pulse 1.5s infinite' }} />
       <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }`}</style>
     </div>
   );
@@ -150,11 +148,40 @@ export default function ScorePage() {
 
           <button className="main-btn" onClick={() => router.push('/score/new')}>+ Start New Session</button>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, alignItems: 'start' }}>
+          {/* STATS ROW */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+            <div style={{ background: '#0e0e0e', borderRadius: 14, padding: '14px 16px', borderLeft: '2px solid #ff5e1a' }}>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>Avg Score</div>
+              {completedSessions.length > 0 ? (
+                <div style={{ fontSize: 22, fontWeight: 900, color: '#ff5e1a' }}>
+                  {(completedSessions.reduce((sum, s) => sum + s.totalScore, 0) / completedSessions.length).toFixed(1)}
+                </div>
+              ) : (
+                <div style={{ height: 20, width: '70%', background: 'rgba(255,255,255,0.06)', borderRadius: 4 }} />
+              )}
+            </div>
+            <div style={{ background: '#0e0e0e', borderRadius: 14, padding: '14px 16px', borderLeft: '2px solid rgba(255,255,255,0.15)' }}>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>Total Arrows</div>
+              <div style={{ fontSize: 22, fontWeight: 900, color: completedSessions.length > 0 ? '#fff' : 'rgba(255,255,255,0.15)' }}>
+                {completedSessions.reduce((sum, s) => sum + s.totalTargets, 0)}
+              </div>
+            </div>
+            <div style={{ background: '#0e0e0e', borderRadius: 14, padding: '14px 16px', borderLeft: '2px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>Last Session</div>
+              {completedSessions.length > 0 ? (
+                <>
+                  <div style={{ fontSize: 22, fontWeight: 900, color: '#fff' }}>{completedSessions[0].totalScore}</div>
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>{completedSessions[0].targetType}</div>
+                </>
+              ) : (
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>None yet</div>
+              )}
+            </div>
+          </div>
 
-            {/* LEFT — empty state or sessions list */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {sessions.length === 0 ? (
+          {/* SESSIONS LIST */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {sessions.length === 0 ? (
                 <div style={{
                   background: 'rgba(28,27,27,1)', borderRadius: 16, padding: 32,
                   display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -233,47 +260,10 @@ export default function ScorePage() {
                   )}
                 </>
               )}
-            </div>
-
-            {/* RIGHT — always visible stats */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ background: '#0e0e0e', borderRadius: 14, padding: 18, borderLeft: '2px solid rgba(255,94,26,0.3)' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 12 }}>Avg. Score</div>
-                {completedSessions.length > 0 ? (
-                  <div style={{ fontSize: 28, fontWeight: 900, color: '#ff5e1a' }}>
-                    {(completedSessions.reduce((sum, s) => sum + s.totalScore, 0) / completedSessions.length).toFixed(1)}
-                  </div>
-                ) : (
-                  <>
-                    <div style={{ height: 24, width: '75%', background: 'rgba(255,255,255,0.06)', borderRadius: 6 }} />
-                    <div style={{ marginTop: 10, fontSize: 10, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Awaiting Data</div>
-                  </>
-                )}
-              </div>
-
-              <div style={{ background: '#0e0e0e', borderRadius: 14, padding: 18, borderLeft: '2px solid rgba(255,255,255,0.08)' }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>Total Arrows</div>
-                <div style={{ fontSize: 32, fontWeight: 900, color: completedSessions.length > 0 ? '#fff' : 'rgba(255,255,255,0.15)' }}>
-                  {completedSessions.reduce((sum, s) => sum + s.totalTargets, 0)}
-                </div>
-                <div style={{ marginTop: 6, fontSize: 10, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Lifetime Count</div>
-              </div>
-
-              <div style={{ background: 'rgba(28,27,27,1)', borderRadius: 14, padding: 18 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#ff5e1a', marginBottom: 12 }}>Last Session</div>
-                {completedSessions.length > 0 ? (
-                  <div>
-                    <div style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>{completedSessions[0].totalScore}</div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>{completedSessions[0].type} · {new Date(completedSessions[0].date).toLocaleDateString()}</div>
-                  </div>
-                ) : (
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>No sessions yet</div>
-                )}
-              </div>
-            </div>
           </div>
         </div>
       </div>
     </>
   );
 }
+
