@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { getSessions, deleteSession as deleteSessionDB } from '@/lib/db';
+import { getSessions } from '@/lib/db';
 
 interface Session {
   id: string;

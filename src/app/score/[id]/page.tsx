@@ -107,7 +107,7 @@ export default function SessionPage() {
     if (!session) return;
     setLocalDistance(session.targets[currentTarget]?.distance ? String(session.targets[currentTarget].distance) : '');
     setLocalNotes(session.targets[currentTarget]?.notes || '');
-  }, [currentTarget]);
+  }, [currentTarget, session]);
 
   const saveSessionData = async (updated: Session) => {
     const { data: { session: authSession } } = await supabase.auth.getSession();

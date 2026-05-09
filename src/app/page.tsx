@@ -123,19 +123,14 @@ export default function Home() {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    console.log('Auth check useEffect running');
     try {
       supabase.auth.getSession().then(({ data: { session }, error }) => {
-        console.log('Session result:', session, 'Error:', error);
         if (error || !session) {
-          console.log('No session, redirecting to landing');
           router.push('/landing');
         } else {
-          console.log('Session found, userId:', session.user.id);
           setUserId(session.user.id);
           setAuthChecked(true);
           getBows(session.user.id).then(data => {
-            console.log('Bows from Supabase:', data);
             if (data && data.length > 0) {
               const mapped = data.map((b: any) => ({
                 id: b.id,
@@ -190,8 +185,7 @@ export default function Home() {
     if (userId) {
       for (const bow of updated) {
         try {
-          const result = await saveBow(userId, bow);
-          console.log('Bow saved to Supabase:', result);
+          await saveBow(userId, bow);
         } catch (error) {
           console.error('Failed to save bow to Supabase:', error);
         }

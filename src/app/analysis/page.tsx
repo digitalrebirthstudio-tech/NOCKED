@@ -9,6 +9,7 @@ interface Session {
   id: string;
   bowName: string;
   type: string;
+  targetType: string;
   date: number;
   totalScore: number;
   totalTargets: number;
@@ -19,6 +20,10 @@ interface Session {
 
 type Range = '7d' | '30d' | 'all';
 
+const MAX_PER_TARGET: Record<string, number> = {
+  'ASA 3D': 12, 'IBO 3D': 11, 'NFAA Field': 5, 'NFAA Indoor': 5, 'Vegas 300': 10, 'AON': 12,
+};
+
 export default function AnalysisPage() {
   const router = useRouter();
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -28,13 +33,13 @@ export default function AnalysisPage() {
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { router.push('/landing'); return; }
-      const data = await getSessions(session.user.id).catch((e) => { console.error('getSessions error:', e); return []; });
-      console.log('analysis getSessions raw:', data);
+      const data = await getSessions(session.user.id).catch(() => []);
       if (data) {
         const mapped = data.map((s: any) => ({
           id: s.id,
           bowName: s.bow_name,
           type: s.type,
+          targetType: s.target_type || 'ASA 3D',
           date: s.date,
           totalScore: s.total_score,
           totalTargets: s.total_targets,
@@ -42,7 +47,6 @@ export default function AnalysisPage() {
           targets: s.targets || [],
           completed: s.completed,
         })).filter((s: Session) => s.completed);
-        console.log('analysis mapped+filtered sessions:', mapped);
         setSessions(mapped);
       }
       setLoading(false);
@@ -301,7 +305,7 @@ export default function AnalysisPage() {
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: 28, fontWeight: 800, color: '#ff5e1a', letterSpacing: -1 }}>{s.totalScore}</div>
-                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>/ {s.totalTargets * 12}</div>
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>/ {s.totalTargets * (MAX_PER_TARGET[s.targetType] || 12)}</div>
                       </div>
                     </div>
                   ))}
