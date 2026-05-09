@@ -127,14 +127,10 @@ export default function ScorePage() {
 
           {/* HERO */}
           <div style={{ padding: '36px 20px 20px' }}>
-            <h2 style={{ fontSize: 28, fontWeight: 800, color: '#fff', margin: 0, lineHeight: 1.1 }}>
-              Your Sessions
+            <h2 style={{ fontSize: 36, fontWeight: 900, fontStyle: 'italic', letterSpacing: '-1px', textTransform: 'uppercase', margin: 0, lineHeight: 1.1 }}>
+              <span style={{ color: '#fff' }}>PRECISION </span>
+              <span style={{ color: '#ff5e1a' }}>TRACKING</span>
             </h2>
-            <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginTop: 6 }}>
-              {completedSessions.length > 0
-                ? `${completedSessions.length} round${completedSessions.length !== 1 ? 's' : ''} logged`
-                : 'No rounds logged yet'}
-            </div>
           </div>
 
           <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
